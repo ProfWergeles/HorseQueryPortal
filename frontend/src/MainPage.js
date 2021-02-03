@@ -2,14 +2,17 @@ import React, {useState} from 'react';
 
 import axios from 'axios';
 import { useHistory } from "react-router-dom";
+import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
+import 'react-tabs/style/react-tabs.css';
 
 import ConditionList from './ConditionList';
 
 function MainPage() {
     let history = useHistory();
 
-    const [isTwoQuery, setIsTwoQuery] = useState(true);
+    const [currentForm, setCurrentForm] = useState(0);
     const [query, setQuery] = useState("first");
+
     const [file, setFile] = useState(null);
     const [columns ,setColumns] = useState([]);
     const [browseFilename, setBrowseFilename] = useState("Browse Files...");
@@ -40,7 +43,8 @@ function MainPage() {
 
         formData.append("myfile", file, filename);
 
-        if (isTwoQuery === true) {
+        // if it is two query form
+        if (currentForm === 1) {
             formData.append("query", query);
 
         } else {
@@ -156,72 +160,88 @@ function MainPage() {
     return (
         <div className="mainPage">
             <div className="wrapper">
-                <h3 className="header">Upload a CSV file</h3>
-                <form onSubmit={handleSubmit}>
-                    <div className="mainPage__browseFile">
-                        <label htmlFor="file" className="mainPage__browseFileButton">{browseFilename}</label>
-                    </div>
-                    <input 
-                        id="file" 
-                        type="file" 
-                        onChange={e => {
-                            if (e.target.files[0] === undefined) {
-                                setBrowseFilename("Browse Files...");
-                                setFile(null);
-                                setColumns([]);
-                                setConditions([{
-                                    id: 0,
-                                    parameter: "",
-                                    comparator: "",
-                                    value: "",
-                                }]);
-                                return;
-                            }
+                <Tabs onSelect={(currentIndex) => setCurrentForm(currentIndex)}>
+                    <TabList>
+                    <Tab>Dynamic Query</Tab>
+                    <Tab>Preset Query</Tab>
+                    </TabList>
 
-                            setFile(e.target.files[0]);
-                            setBrowseFilename(e.target.files[0].name);
-                            parseColumns(e.target.files[0]);
-                        }}
-                    />
                     <br />
-                    <br />
-                    <button className="klButton" type="submit">Upload</button>
-                    <br />
-                    <br />
-                    <div style={{color: "red"}}>{error}</div>
-                </form>
-                <br />
-                <br />
-                {isTwoQuery === false ? (columns.length === 0 ? (<div></div>) : (<div>
-                        <ConditionList 
-                            conditions={conditions}
-                            parametorChange={parametorChange}
-                            comparatorChange={comparatorChange}
-                            valueChange={valueChange}
-                            deleteCondition={deleteCondition}
-                            columns={columns}
+                    <h3 className="header">Upload a CSV file</h3>
+                    <form onSubmit={handleSubmit}>
+                        <div className="mainPage__browseFile">
+                            <label htmlFor="file" className="mainPage__browseFileButton">{browseFilename}</label>
+                        </div>
+                        <input 
+                            id="file" 
+                            type="file" 
+                            onChange={e => {
+                                if (e.target.files[0] === undefined) {
+                                    setBrowseFilename("Browse Files...");
+                                    setFile(null);
+                                    setColumns([]);
+                                    setConditions([{
+                                        id: 0,
+                                        parameter: "",
+                                        comparator: "",
+                                        value: "",
+                                    }]);
+                                    return;
+                                }
+
+                                setFile(e.target.files[0]);
+                                setBrowseFilename(e.target.files[0].name);
+                                parseColumns(e.target.files[0]);
+                            }}
                         />
-                        <button
-                            className="mainPage__browseFileButton"
-                            onClick={() => addCondition({
-                                id: conditions[conditions.length-1].id + 1 ,
-                                parameter: columns[1],
-                                comparator: "",
-                                value: "",
-                            })}
-                        >
-                            ADD
-                        </button>
-                    </div>)) : 
-                    (<div>
-                        <select
-                            onChange={e => setQuery(e.target.value)}
-                        >
-                            <option value="first">query 1</option>
-                            <option value="second">query 2</option>
-                        </select>
-                    </div>)
-                }
+                        <br />
+                        <br />
+                        <button className="klButton" type="submit">Upload</button>
+                        <br />
+                        <br />
+                        <div style={{color: "red"}}>{error}</div>
+                    </form>
+                    <br />
+                    <br />
+
+                    <TabPanel>
+                        {(columns.length === 0 ? (<div></div>) : 
+                            (<div>
+                                <ConditionList 
+                                    conditions={conditions}
+                                    parametorChange={parametorChange}
+                                    comparatorChange={comparatorChange}
+                                    valueChange={valueChange}
+                                    deleteCondition={deleteCondition}
+                                    columns={columns}
+                                />
+                                <button
+                                    className="mainPage__browseFileButton"
+                                    onClick={() => addCondition({
+                                        id: conditions[conditions.length-1].id + 1 ,
+                                        parameter: columns[1],
+                                        comparator: "",
+                                        value: "",
+                                    })}
+                                >
+                                    ADD
+                                </button>
+                            </div>)
+                        )}
+                    </TabPanel>
+                    <TabPanel>
+                        <div>
+                            <select
+                                onChange={e => setQuery(e.target.value)}
+                            >
+                                <option value="first">query 1</option>
+                                <option value="second">query 2</option>
+                            </select>
+                        </div>
+                    </TabPanel>
+                </Tabs>
+                <br />
+                <br />
             </div>
         </div>
     )

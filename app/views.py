@@ -63,6 +63,7 @@ def upload_file():
                 parsedFilename, filetype = os.path.splitext(filename)
                 parsedFilename += "_parsed" + filetype
 
+                # check if it is twoQuery form
                 if (request.form.get("query") != None):
                     if(request.form["query"] == "first"):
                         print("it is first q")
