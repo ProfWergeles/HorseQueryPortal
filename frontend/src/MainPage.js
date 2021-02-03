@@ -8,6 +8,8 @@ import ConditionList from './ConditionList';
 function MainPage() {
     let history = useHistory();
 
+    const [isTwoQuery, setIsTwoQuery] = useState(true);
+    const [query, setQuery] = useState("first");
     const [file, setFile] = useState(null);
     const [columns ,setColumns] = useState([]);
     const [browseFilename, setBrowseFilename] = useState("Browse Files...");
@@ -38,18 +40,23 @@ function MainPage() {
 
         formData.append("myfile", file, filename);
 
-        conditions.forEach(condition => {
-            if (condition.value === "") {
-                validForm = false;
-            }
-            formData.append(`parametor${condition.id}`, condition.parameter);
-            formData.append(`comparator${condition.id}`, condition.comparator);
-            formData.append(`value${condition.id}`, condition.value);
-        })
+        if (isTwoQuery === true) {
+            formData.append("query", query);
 
-        if (!validForm) {
-            setError("Please fill out every field")
-            return;
+        } else {
+            conditions.forEach(condition => {
+                if (condition.value === "") {
+                    validForm = false;
+                }
+                formData.append(`parametor${condition.id}`, condition.parameter);
+                formData.append(`comparator${condition.id}`, condition.comparator);
+                formData.append(`value${condition.id}`, condition.value);
+            })
+    
+            if (!validForm) {
+                setError("Please fill out every field")
+                return;
+            }
         }
 
         axios.post('/api/upload-file', formData)
@@ -185,8 +192,7 @@ function MainPage() {
                 </form>
                 <br />
                 <br />
-                {columns.length === 0 ? (<div></div>) : (
-                    <div>
+                {isTwoQuery === false ? (columns.length === 0 ? (<div></div>) : (<div>
                         <ConditionList 
                             conditions={conditions}
                             parametorChange={parametorChange}
@@ -206,8 +212,16 @@ function MainPage() {
                         >
                             ADD
                         </button>
-                    </div>
-                )}
+                    </div>)) : 
+                    (<div>
+                        <select
+                            onChange={e => setQuery(e.target.value)}
+                        >
+                            <option value="first">query 1</option>
+                            <option value="second">query 2</option>
+                        </select>
+                    </div>)
+                }
             </div>
         </div>
     )

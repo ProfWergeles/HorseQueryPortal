@@ -7,6 +7,7 @@ import pandas as pd
 import os
 
 from . import horseFiltering as fdb
+from . import multiplecsvinput as mci
 
 @app.route("/api")
 def index():
@@ -44,13 +45,6 @@ def upload_file():
         if request.files:
             file = request.files["myfile"]
 
-            parameters = []
-            for _, val in request.form.items():
-                parameters.append(val)
-
-            print(file)
-            print(parameters)
-
             if file.filename == "":
                 print("File must have a name")
 
@@ -69,24 +63,40 @@ def upload_file():
                 parsedFilename, filetype = os.path.splitext(filename)
                 parsedFilename += "_parsed" + filetype
 
-                # run the parse function to generate the new file stored in uploads/ 
-                # loop through parameters with i+3 to call nonCLI
+                if (request.form.get("query") != None):
+                    if(request.form["query"] == "first"):
+                        print("it is first q")
+                        mci.nonCLI1(app.config["FILE_UPLOADS"] + filename, app.config["FILE_UPLOADS"] + parsedFilename)
+                    if(request.form["query"] == "second"):
+                        print("it is second q")
+                        mci.nonCLI2(app.config["FILE_UPLOADS"] + filename, app.config["FILE_UPLOADS"] + parsedFilename)
+                else:
+                    parameters = []
+                    for _, val in request.form.items():
+                        parameters.append(val)
 
-                df1 = fdb.createTable(app.config["FILE_UPLOADS"] + filename)
+                    print(file)
+                    print(parameters)
 
-                print(len(parameters))
 
-                j = 0
-                while j < len(parameters):
-                    field = parameters[j]
-                    operator = parameters[j+1]
-                    value = parameters[j+2]
+                    # run the parse function to generate the new file stored in uploads/ 
+                    # loop through parameters with i+3 to call nonCLI
 
-                    df1 = fdb.filterTable(df1, field, operator, value)
+                    df1 = fdb.createTable(app.config["FILE_UPLOADS"] + filename)
 
-                    j+=3
+                    print(len(parameters))
 
-                fdb.exportTable(df1, app.config["FILE_UPLOADS"] + parsedFilename)
+                    j = 0
+                    while j < len(parameters):
+                        field = parameters[j]
+                        operator = parameters[j+1]
+                        value = parameters[j+2]
+
+                        df1 = fdb.filterTable(df1, field, operator, value)
+
+                        j+=3
+
+                    fdb.exportTable(df1, app.config["FILE_UPLOADS"] + parsedFilename)
 
                 return {
                     "success" : True,
