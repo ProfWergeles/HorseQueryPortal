@@ -193,8 +193,8 @@ def nullBlocks(inputDf):
   
     return inputDf
 
-def filterTable(df, column, operator, value):
-    print("\n\nfilter table activated\n\n")
+def filterTable(df, column, operator, value, samesign=False, absvalue=False):
+    print("\n\nfiltering", column, operator, value, "\n\n")
     #the conditional operators: (>, <, >=, <=, ==, !=)
     #also, for absolute value there will be more
     if (value == "Null" and column == "Blocks" and operator == "=="):
@@ -205,23 +205,57 @@ def filterTable(df, column, operator, value):
         print(contain_values)
         return contain_values
     else:
-        if (operator == "=="):
-            tableFilter = df[column] == value
-        elif (operator == ">"):
-            tableFilter = df[column] > value
-        elif (operator == "<"):
-            tableFilter = df[column] < value
-        elif (operator == ">="):
-            tableFilter = df[column] >= value
-        elif (operator == "<="):
-            tableFilter = df[column] <= value
-        elif (operator == "!="):
-            tableFilter = df[column] != value
-        else:
-            errorstring = "\n\nINPUT::\nOperator not valid and will cause tableFilter reference before assignment"
-            raise ValueError(errorstring)  
-                 
-        df.where(tableFilter, inplace=True)
+        if (samesign == True):
+            tableFilter = df[column] * df[column] > 0
+            df.where(tableFilter, inplace=True)
+            
+        elif (absvalue == True):    
+            if (operator == "=="):
+                tableFilter = df[column] == value
+                tableFilter2 = df[column] == -1*value
+                df.where(tableFilter | tableFilter2, inplace=True)
+            elif (operator == ">"):
+                tableFilter = df[column] > value
+                tableFilter2 = df[column] < -1*value
+                df.where(tableFilter & tableFilter2, inplace=True)
+            elif (operator == "<"):
+                tableFilter = df[column] < value
+                tableFilter2 = df[column] > -1*value
+                df.where(tableFilter & tableFilter2, inplace=True)
+            elif (operator == ">="):
+                tableFilter = df[column] >= value
+                tableFilter2 = df[column] <= -1*value
+                df.where(tableFilter & tableFilter2, inplace=True)
+            elif (operator == "<="):
+                tableFilter = df[column] <= value
+                tableFilter2 = df[column] >= -1*value
+                df.where(tableFilter & tableFilter2, inplace=True)
+            elif (operator == "!="):
+                tableFilter = df[column] != value
+                tableFilter = df[column] != -1*value
+                df.where(tableFilter & tableFilter2, inplace=True)
+            else:
+                errorstring = "\n\nINPUT::\nOperator not valid and will cause tableFilter reference before assignment"
+                raise ValueError(errorstring)   
+                
+        else:    
+            if (operator == "=="):
+                tableFilter = df[column] == value
+            elif (operator == ">"):
+                tableFilter = df[column] > value
+            elif (operator == "<"):
+                tableFilter = df[column] < value
+            elif (operator == ">="):
+                tableFilter = df[column] >= value
+            elif (operator == "<="):
+                tableFilter = df[column] <= value
+            elif (operator == "!="):
+                tableFilter = df[column] != value
+            else:
+                errorstring = "\n\nINPUT::\nOperator not valid and will cause tableFilter reference before assignment"
+                raise ValueError(errorstring)      
+            df.where(tableFilter, inplace=True)
+            
     df.dropna(how="all", inplace=True)
     
     return df
