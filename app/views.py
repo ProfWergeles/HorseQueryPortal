@@ -7,7 +7,6 @@ import pandas as pd
 import os
 
 from . import horseFiltering as fdb
-from . import multiplecsvinput as mci
 
 @app.route("/api")
 def index():
@@ -67,10 +66,10 @@ def upload_file():
                 if (request.form.get("query") != None):
                     if(request.form["query"] == "first"):
                         print("it is first q")
-                        mci.nonCLI1(app.config["FILE_UPLOADS"] + filename, app.config["FILE_UPLOADS"] + parsedFilename)
+                        fdb.nonCLI1(app.config["FILE_UPLOADS"] + filename, app.config["FILE_UPLOADS"] + parsedFilename)
                     if(request.form["query"] == "second"):
                         print("it is second q")
-                        mci.nonCLI2(app.config["FILE_UPLOADS"] + filename, app.config["FILE_UPLOADS"] + parsedFilename)
+                        fdb.nonCLI2(app.config["FILE_UPLOADS"] + filename, app.config["FILE_UPLOADS"] + parsedFilename)
                 else:
                     parameters = []
                     for _, val in request.form.items():

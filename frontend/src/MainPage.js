@@ -234,8 +234,8 @@ function MainPage() {
                             <select
                                 onChange={e => setQuery(e.target.value)}
                             >
-                                <option value="first">query 1</option>
-                                <option value="second">query 2</option>
+                                <option value="first">ipsilateral impact</option>
+                                <option value="second">ipsilateral pushoff</option>
                             </select>
                         </div>
                     </TabPanel>
