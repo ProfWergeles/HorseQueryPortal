@@ -70,6 +70,9 @@ def upload_file():
                     if(request.form["query"] == "second"):
                         print("it is second q")
                         fdb.nonCLI2(app.config["FILE_UPLOADS"] + filename, app.config["FILE_UPLOADS"] + parsedFilename)
+                    if(request.form["query"] == "pdn"):
+                        print("it is second q")
+                        fdb.nonCLIPDN(app.config["FILE_UPLOADS"] + filename, app.config["FILE_UPLOADS"] + parsedFilename)
                 else:
                     parameters = []
                     for _, val in request.form.items():

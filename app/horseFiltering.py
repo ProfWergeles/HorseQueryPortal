@@ -261,15 +261,15 @@ def nullBlocks(inputDf):
     return inputDf
 
 def filterTable(df, column, operator, value, absvalue=False):
-    print("\nfiltering", column, operator, value)
+    # print("\nfiltering", column, operator, value)
     #the conditional operators: (>, <, >=, <=, ==, !=)
     #also, for absolute value there will be more
     if (value == "Null" and column == "Blocks" and operator == "=="):
         df = df[df['Blocks'].isnull()] #can we make this an inplace=True?
-        print(df[column])
+        # print(df[column])
     elif (operator == "contains"):
         contain_values = df[df[column].str.contains(value, na=False, regex=False)]
-        print(contain_values)
+        # print(contain_values)
         df.dropna(how="all", inplace=True)
         return contain_values
     if (operator == "Same Signs"):
@@ -283,10 +283,10 @@ def filterTable(df, column, operator, value, absvalue=False):
         df.dropna(how="all", inplace=True)
         return df
     else:
-        print("Is str 1", isinstance(value, str))
+        # print("Is str 1", isinstance(value, str))
         if(is_number(value) & isinstance(value, str)):
             value = float(value)
-            print("\/Is str 2", isinstance(value, str))
+            # print("\/Is str 2", isinstance(value, str))
         
         if (absvalue == True):   
             #make sure the value is positive otherwise the math is wrong
