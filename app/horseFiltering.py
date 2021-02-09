@@ -13,6 +13,27 @@ Created on Tue Nov  3 14:24:17 2020
 import pandas as pd
 import argparse
 import numpy as np
+#from multipledispatch import dispatch
+
+
+#df = pd.DataFrame
+
+# this helper function is straight from https://www.pythoncentral.io/how-to-check-if-a-string-is-a-number-in-python-including-unicode/
+def is_number(s):
+    try:
+        float(s)
+        return True
+    except ValueError:
+        pass
+ 
+    try:
+        import unicodedata
+        unicodedata.numeric(s)
+        return True
+    except (TypeError, ValueError):
+        pass
+ 
+    return False
 
 def createTable(inputfile):
     #print(inputfile)
@@ -48,6 +69,17 @@ def nonCLI2(inputfile, outputfile):
     outputDf.to_csv(outputfile)
     print("Exported to", outputfile)
     
+def nonCLIPDN(inputfile, outputfile):
+    print(inputfile, outputfile)
+    inputDf = pd.read_csv(inputfile)
+    #print(inputDf)
+    outputDf = pd.DataFrame()
+    print("Will attempt to use function parameters as filenames, working...")
+    outputDf = goPDNQuery(inputDf)
+    #print(outputDf)
+    outputDf.to_csv(outputfile)
+    print("Exported to", outputfile)
+    
 def exportTable(inputDf, outputfile):
     #print("will export to", outputfile)
     #print("input data:", inputDf)
@@ -55,15 +87,51 @@ def exportTable(inputDf, outputfile):
     #print(outputDf)
     inputDf.to_csv(outputfile)
     print("\n\n_____\nExported to", outputfile)
+    
+def goPDNQuery(df1):
+    df1 = filterTable(df1, "Trial", "==", "Straight Line")
+    df1 = filterTable(df1, "Fore Strides", ">", "19")
+    dfPDN1 = filterTable(df1, "Blocks", "contains", "PDN")
+    # standard in Blocks is "RH: PDN" for example. If there are more than 7 characters
+    # in Blocks, that means that there is more than just 1 block. 
+    mask = (dfPDN1['Blocks'].str.len() > 7)
+    dfPDN1 = dfPDN1.loc[mask]
+    dfPDN1 = dfPDN1.loc[:, ['Horse', 'When']]
+    # need to slice the date (first 8 characters) out of the 'When' column and keep.
+    # TODO: dates are not consistnent string lengths
+    df1['When'] = df1['When'].str[:9]
+    dfPDN1['When'] = dfPDN1['When'].str[:9]
+    dfPDN1 = pd.DataFrame.drop_duplicates(dfPDN1)
+    # now dfPDN1 should just be the list of horse names and dates and times. 
+    print("About to get all trials for Names on certain Date")
+    
+    outputDf = pd.DataFrame(columns=df1.columns)
+    print("outputDF", outputDf)
+    
+    # function: give back results from original df1 where the horse names and dates are the same.
+    for index, row in dfPDN1.iterrows():
+        #print("row.Horse", row.Horse, "row.When", row.When)
+        # 1st) take out first date chars ^^.str[:9] above
+        # 2nd) str.contains(date))
+        
+        tempDf =  df1.copy()
+        
+        tempDf = filterTable(tempDf, "Horse", "==", row.Horse)
+        tempDf = filterTable(tempDf, "When", "==", row.When)
+        #print(tempDf)
+        #add row to output DF
+        outputDf = outputDf.append(tempDf)
+        #print(outputDf)
+    return outputDf    
 
 def goQuery1(inputDf):
     
-    print("\n\nQUERY 1 \n\ninputDf", inputDf, "output")
+    print("\n\nQUERY 1 ipsilateral impact\n\ninputDf", inputDf, "output")
 
     #print("inputDf is a ", type(inputDf))
     # pandas filtering. 
     
-    # query 2 has 6 parts:
+    # query 1 ipsilateral impact has 6 parts:
     # 1. straight line trials
     # 2. no blocks
     # 3. at least twenty strides
@@ -88,8 +156,8 @@ def goQuery1(inputDf):
     vectorNegFilter = inputDf["Fore Signed Vector Sum"] < -8.5
     
     # 5. diffmin pelvis >3 (absolute value)
-    hinddiffmaxmeanPosFilter = inputDf["Hind Diff Min Mean"] > 3
-    hinddiffmaxmeanNegFilter = inputDf["Hind Diff Min Mean"] < -3
+    hinddiffminmeanPosFilter = inputDf["Hind Diff Min Mean"] > 3
+    hinddiffminmeanNegFilter = inputDf["Hind Diff Min Mean"] < -3
     
     # 6. diffminpelvis same sign as diffminhead. 
     # 'Hind Diff Min Mean' 'Fore Diff Min Mean'
@@ -102,7 +170,7 @@ def goQuery1(inputDf):
     #step 4 vector sum filter
     inputDf.where(vectorPosFilter | vectorNegFilter, inplace=True)
     #step 5 diffmaxmeanfilter
-    inputDf.where(hinddiffmaxmeanPosFilter | hinddiffmaxmeanNegFilter, inplace=True)
+    inputDf.where(hinddiffminmeanPosFilter | hinddiffminmeanNegFilter, inplace=True)
     #step 6 same sign filter
     inputDf.where(samesignFilter, inplace=True)
     
@@ -122,14 +190,13 @@ def goQuery2(inputDf):
     #print("inputDf is a ", type(inputDf))
     # pandas filtering. 
     
-    # query 2 has 6 parts:
+    # query 2 ipsilateral pushoff has 6 parts:
     # 1. straight line trials
     # 2. no blocks
     # 3. at least twenty strides
     # 4. VS > 8.5 (absolute value)
     # 5. diffmax pelvis >3 (absolute value)
     # 6. sign of diffmaxpelvis same as sign of diffminhead
-    # this is ipsilateral? If memory serves
     
     # 1. straight lines (can be done in sql but moving to python)
     straightlineFilter = inputDf["Trial"] == "Straight Line"
@@ -193,14 +260,143 @@ def nullBlocks(inputDf):
   
     return inputDf
 
-def filterTable(df, column, operator, value):
-    print("\n\nfilter table activated\n\n")
+def filterTable(df, column, operator, value, absvalue=False):
+    print("\nfiltering", column, operator, value)
     #the conditional operators: (>, <, >=, <=, ==, !=)
     #also, for absolute value there will be more
     if (value == "Null" and column == "Blocks" and operator == "=="):
         df = df[df['Blocks'].isnull()] #can we make this an inplace=True?
         print(df[column])
     elif (operator == "contains"):
+        contain_values = df[df[column].str.contains(value, na=False, regex=False)]
+        print(contain_values)
+        df.dropna(how="all", inplace=True)
+        return contain_values
+    if (operator == "Same Signs"):
+        tableFilter = df[column] * df[value] > 0
+        df.where(tableFilter, inplace=True)
+        df.dropna(how="all", inplace=True)
+        return df
+    if (operator == "Opposite Signs"):
+        tableFilter = df[column] * df[value] < 0
+        df.where(tableFilter, inplace=True)
+        df.dropna(how="all", inplace=True)
+        return df
+    else:
+        print("Is str 1", isinstance(value, str))
+        if(is_number(value) & isinstance(value, str)):
+            value = float(value)
+            print("\/Is str 2", isinstance(value, str))
+        
+        if (absvalue == True):   
+            #make sure the value is positive otherwise the math is wrong
+            
+            if (operator == "=="):
+                tableFilter = df[column] == value
+                tableFilter2 = df[column] == -1*value
+                df.where(tableFilter | tableFilter2, inplace=True)
+            elif (operator == ">"):
+                tableFilter = df[column] > value
+                tableFilter2 = df[column] < -1*value
+                df.where(tableFilter | tableFilter2, inplace=True)
+            elif (operator == "<"):
+                tableFilter = df[column] < value
+                tableFilter2 = df[column] > -1*value
+                df.where(tableFilter & tableFilter2, inplace=True)
+            elif (operator == ">="):
+                tableFilter = df[column] >= value
+                tableFilter2 = df[column] <= -1*value
+                df.where(tableFilter | tableFilter2, inplace=True)
+            elif (operator == "<="):
+                tableFilter = df[column] <= value
+                tableFilter2 = df[column] >= -1*value
+                df.where(tableFilter & tableFilter2, inplace=True)
+            elif (operator == "!="):
+                tableFilter = df[column] != value
+                tableFilter = df[column] != -1*value
+                df.where(tableFilter & tableFilter2, inplace=True)
+            else:
+                errorstring = "\n\nINPUT::\nOperator not valid and will cause tableFilter reference before assignment"
+                raise ValueError(errorstring)   
+                
+        else:    
+            if (operator == "=="):
+                tableFilter = df[column] == value
+            elif (operator == ">"):
+                tableFilter = df[column] > value
+            elif (operator == "<"):
+                tableFilter = df[column] < value
+            elif (operator == ">="):
+                tableFilter = df[column] >= value
+            elif (operator == "<="):
+                tableFilter = df[column] <= value
+            elif (operator == "!="):
+                tableFilter = df[column] != value
+            else:
+                errorstring = "\n\nINPUT::\nOperator not valid and will cause tableFilter reference before assignment"
+                raise ValueError(errorstring)      
+            df.where(tableFilter, inplace=True)
+            
+    df.dropna(how="all", inplace=True)
+    
+    return df
+'''
+
+#@dispatch(df, str, str, int)
+def filterTable(df, column, operator, value):
+    print("\nfiltering", column, operator, value)
+    print("value is type of", type(value))
+    #the conditional operators: (>, <, >=, <=, ==, !=)
+    #also, for absolute value there will be more
+    if (value == "Null" and column == "Blocks" and operator == "=="):
+        df = df[df['Blocks'].isnull()] #can we make this an inplace=True?
+        print(df[column])
+    elif (operator == "contains"):
+        contain_values = df[df[column].str.contains(value, na=False, regex=False)]
+        print(contain_values)
+        return contain_values
+    else:
+        print("Is str 1", isinstance(value, str))
+        if(is_number(value) & isinstance(value, str)):
+            value = float(value)
+            print("\/Is str 2", isinstance(value, str))
+        if (operator == "=="):
+            tableFilter = df[column] == value
+        elif (operator == ">"):
+            tableFilter = df[column] > value
+        elif (operator == "<"):
+            tableFilter = df[column] < value
+        elif (operator == ">="):
+            tableFilter = df[column] >= value
+        elif (operator == "<="):
+            tableFilter = df[column] <= value
+        elif (operator == "!="):
+            tableFilter = df[column] != value
+        else:
+            errorstring = "\n\nINPUT::\nOperator not valid and will cause tableFilter reference before assignment"
+            raise ValueError(errorstring)  
+                 
+        df.where(tableFilter, inplace=True)
+    df.dropna(how="all", inplace=True)
+    
+    return df
+'''
+'''
+#@dispatch(df, str, str, str)
+def filterTable(df, column, operator, value):
+    print("ISDIGIT1", value.isdigit())
+    if(value.isdigit() == True):
+        float(value)
+        print("\/ISDIGIT2", value.isdigit())    
+    return filterTable(df, column, operator, value)
+'''
+'''
+def filterTable(df, column, operator, value):
+    print("\nfiltering", column, operator, value)
+    print("value is type of", type(value))
+    #the conditional operators: (>, <, >=, <=, ==, !=)
+    #also, for absolute value there will be more
+    if (operator == "contains"):
         contain_values = df[df[column].str.contains(value, na=False, regex=False)]
         print(contain_values)
         return contain_values
@@ -225,7 +421,7 @@ def filterTable(df, column, operator, value):
     df.dropna(how="all", inplace=True)
     
     return df
-                    
+'''             
 def main():
     print("printed from main")
     #create parser
