@@ -29,7 +29,10 @@ function Condition(props) {
             />
             <button 
                 style={{cursor: "pointer"}}
-                onClick={() => props.deleteCondition(props.condition.id)}
+                onClick={(e) => {
+                    e.preventDefault();
+                    props.deleteCondition(props.condition.id)
+                }}
             >
                 DELETE
             </button>

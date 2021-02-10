@@ -31,7 +31,7 @@ function MainPage() {
         var validForm = true;
 
         if (file == null) {
-            setError("no file selected")
+            setError("Please select a file")
             return;
         }
 
@@ -44,7 +44,7 @@ function MainPage() {
         formData.append("myfile", file, filename);
 
         // if it is two query form
-        if (currentForm === 1) {
+        if (currentForm === 0) {
             formData.append("query", query);
 
         } else {
@@ -166,8 +166,8 @@ function MainPage() {
             <div className="wrapper">
                 <Tabs onSelect={(currentIndex) => setCurrentForm(currentIndex)}>
                     <TabList>
-                    <Tab>Dynamic Query</Tab>
                     <Tab>Preset Query</Tab>
+                    <Tab>Dynamic Query</Tab>
                     </TabList>
 
                     <br />
@@ -180,6 +180,7 @@ function MainPage() {
                             id="file" 
                             type="file" 
                             onChange={e => {
+                                setError("");
                                 if (e.target.files[0] === undefined) {
                                     setBrowseFilename("Browse Files...");
                                     setFile(null);
@@ -198,52 +199,57 @@ function MainPage() {
                                 parseColumns(e.target.files[0]);
                             }}
                         />
-                        <br />
-                        <br />
-                        <button className="klButton" type="submit">Upload</button>
+                        
                         <br />
                         <br />
                         <div style={{color: "red"}}>{error}</div>
-                    </form>
-                    <br />
-                    <br />
+                        <br />
+                        <br />
 
-                    <TabPanel>
-                        {(columns.length === 0 ? (<div></div>) : 
-                            (<div>
-                                <ConditionList 
-                                    conditions={conditions}
-                                    parametorChange={parametorChange}
-                                    comparatorChange={comparatorChange}
-                                    valueChange={valueChange}
-                                    deleteCondition={deleteCondition}
-                                    columns={columns}
-                                />
-                                <button
-                                    className="mainPage__browseFileButton"
-                                    onClick={() => addCondition({
-                                        id: conditions[conditions.length-1].id + 1 ,
-                                        parameter: columns[1],
-                                        comparator: "",
-                                        value: "",
-                                    })}
+                        <TabPanel>
+                            <div>
+                                <select
+                                    onChange={e => setQuery(e.target.value)}
                                 >
-                                    ADD
-                                </button>
-                            </div>)
-                        )}
-                    </TabPanel>
-                    <TabPanel>
-                        <div>
-                            <select
-                                onChange={e => setQuery(e.target.value)}
-                            >
-                                <option value="first">Ipsilateral Impact</option>
-                                <option value="second">Ipsilateral Pushoff</option>
-                                <option value="pdn">PDN Query</option>
-                            </select>
-                        </div>
-                    </TabPanel>
+                                    <option value="first">Ipsilateral Impact</option>
+                                    <option value="second">Ipsilateral Pushoff</option>
+                                    <option value="pdn">PDN Query</option>
+                                </select>
+                            </div>
+                        </TabPanel>
+                        <TabPanel>
+                            {(columns.length === 0 ? (<div></div>) : 
+                                (<div>
+                                    <ConditionList 
+                                        conditions={conditions}
+                                        parametorChange={parametorChange}
+                                        comparatorChange={comparatorChange}
+                                        valueChange={valueChange}
+                                        deleteCondition={deleteCondition}
+                                        columns={columns}
+                                    />
+                                    <button
+                                        className="klButton"
+                                        onClick={(e) => {
+                                            e.preventDefault();
+                                            addCondition({
+                                                id: conditions[conditions.length-1].id + 1 ,
+                                                parameter: columns[1],
+                                                comparator: "",
+                                                value: "",
+                                            })
+                                        }}
+                                    >
+                                        ADD
+                                    </button>
+                                </div>)
+                            )}
+                        </TabPanel>
+
+                        <br />
+                        <br />
+                        <button className="mainPage__browseFileButton" type="submit">{"Upload & Go"}</button>
+                    </form>
                 </Tabs>
                 <br />
                 <br />
