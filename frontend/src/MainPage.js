@@ -134,7 +134,11 @@ function MainPage() {
     }
 
     const parseColumns = file => {
-        if (file.type && file.type.indexOf('csv') === -1) {
+        var filename = file.name;
+        var tmp = filename.split(".");
+        var filetype = tmp.pop();
+
+        if (filetype !== "csv") {
             window.alert("Please select a csv file");
             setFile(null);
             setBrowseFilename("Browse Files...");
