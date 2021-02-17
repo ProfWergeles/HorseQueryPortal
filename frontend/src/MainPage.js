@@ -18,8 +18,8 @@ function MainPage() {
     const [browseFilename, setBrowseFilename] = useState("Browse Files...");
     const [conditions, setConditions] = useState([{
         id: 0,
-        parameter: "",
-        comparator: "",
+        parameter: "Analysis Type",
+        comparator: ">",
         value: "",
     }]);
     const [error, setError] = useState("");
@@ -235,7 +235,7 @@ function MainPage() {
                                             addCondition({
                                                 id: conditions[conditions.length-1].id + 1 ,
                                                 parameter: columns[1],
-                                                comparator: "",
+                                                comparator: ">",
                                                 value: "",
                                             })
                                         }}
