@@ -11,7 +11,7 @@ function MainPage() {
     let history = useHistory();
 
     const [currentForm, setCurrentForm] = useState(0);
-    const [query, setQuery] = useState("first");
+    const [query, setQuery] = useState("query1");
 
     const [file, setFile] = useState(null);
     const [columns ,setColumns] = useState([]);
@@ -219,8 +219,8 @@ function MainPage() {
                                 <select
                                     onChange={e => setQuery(e.target.value)}
                                 >
-                                    <option value="first">Ipsilateral Impact</option>
-                                    <option value="second">Ipsilateral Pushoff</option>
+                                    <option value="query1">Ipsilateral Impact</option>
+                                    <option value="query2">Ipsilateral Pushoff</option>
                                     <option value="pdn">PDN Query</option>
                                 </select>
                             </div>

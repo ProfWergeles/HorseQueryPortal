@@ -47,38 +47,24 @@ def appendCSV(workingDf, inputfile):
     workingDf = pd.concat([workingDf, df2], ignore_index=True)
     return workingDf  
 
-def nonCLI1(inputfile, outputfile):
+def nonCLI(inputfile, outputfile, query):
     print(inputfile, outputfile)
     inputDf = pd.read_csv(inputfile)
     #print(inputDf)
     outputDf = pd.DataFrame()
     print("Will attempt to use function parameters as filenames, working...")
-    outputDf = goQuery1(inputDf)
+
+    if (query == "query1"):
+        outputDf = goQuery1(inputDf)
+    if (query == "query2"):
+        outputDf = goQuery2(inputDf)
+    if (query == "pdn"):
+        outputDf = goPDNQuery(inputDf)
+
     #print(outputDf)
     outputDf.to_csv(outputfile)
     print("Exported to", outputfile)
-    
-def nonCLI2(inputfile, outputfile):
-    print(inputfile, outputfile)
-    inputDf = pd.read_csv(inputfile)
-    #print(inputDf)
-    outputDf = pd.DataFrame()
-    print("Will attempt to use function parameters as filenames, working...")
-    outputDf = goQuery2(inputDf)
-    #print(outputDf)
-    outputDf.to_csv(outputfile)
-    print("Exported to", outputfile)
-    
-def nonCLIPDN(inputfile, outputfile):
-    print(inputfile, outputfile)
-    inputDf = pd.read_csv(inputfile)
-    #print(inputDf)
-    outputDf = pd.DataFrame()
-    print("Will attempt to use function parameters as filenames, working...")
-    outputDf = goPDNQuery(inputDf)
-    #print(outputDf)
-    outputDf.to_csv(outputfile)
-    print("Exported to", outputfile)
+
     
 def exportTable(inputDf, outputfile):
     #print("will export to", outputfile)
@@ -89,6 +75,7 @@ def exportTable(inputDf, outputfile):
     print("\n\n_____\nExported to", outputfile)
     
 def goPDNQuery(df1):
+    print("\n\nPDN QUERY \n\n")
     df1 = filterTable(df1, "Trial", "==", "Straight Line")
     df1 = filterTable(df1, "Fore Strides", ">", "19")
     dfPDN1 = filterTable(df1, "Blocks", "contains", "PDN")
