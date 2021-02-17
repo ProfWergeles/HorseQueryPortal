@@ -52,9 +52,9 @@ def nonCLI(inputfile, outputfile, query):
     inputDf = pd.read_csv(inputfile)
     #print(inputDf)
     outputDf = pd.DataFrame()
-    print("Will attempt to use function parameters as filenames, working...")
+    print("Will attempt to use function parameters as filenames for ", query, ", working...")
 
-    if (query == "query1"):
+    if (query == "query1"): #ipsi impact / pushoff?
         outputDf = goQuery1(inputDf)
     if (query == "query2"):
         outputDf = goQuery2(inputDf)

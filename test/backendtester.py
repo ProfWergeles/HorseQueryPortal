@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from HorseQueryPortal import horseFiltering as mtable
+import horseFiltering as mtable
 import pandas as pd
 
 #mtable.nonCLI("/home/royal/Desktop/inputabsol.csv", "/home/royal/Desktop/outputheadless.csv")
