@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, { useState, useEffect } from 'react';
 
 import axios from 'axios';
 import { useHistory } from "react-router-dom";
@@ -16,13 +16,21 @@ function MainPage() {
     const [file, setFile] = useState(null);
     const [columns ,setColumns] = useState([]);
     const [browseFilename, setBrowseFilename] = useState("Browse Files...");
-    const [conditions, setConditions] = useState([{
-        id: 0,
-        parameter: "Analysis Type",
-        comparator: ">",
-        value: "",
-    }]);
+    const [conditions, setConditions] = useState([]);
     const [error, setError] = useState("");
+
+
+    useEffect(() => {
+        // initialize conditions
+        if (columns.length !== 0 && conditions.length === 0) {
+            setConditions([{
+                id: 0,
+                parameter: columns[0],
+                comparator: ">",
+                value: "",
+            }]);
+        }
+    }, [columns, conditions]);
 
     const handleSubmit = e => {
         e.preventDefault();
@@ -234,7 +242,7 @@ function MainPage() {
                                             e.preventDefault();
                                             addCondition({
                                                 id: conditions[conditions.length-1].id + 1 ,
-                                                parameter: columns[1],
+                                                parameter: columns[0],
                                                 comparator: ">",
                                                 value: "",
                                             })
