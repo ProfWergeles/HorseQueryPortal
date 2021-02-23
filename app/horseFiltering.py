@@ -48,7 +48,7 @@ def appendCSV(workingDf, inputfile):
     return workingDf  
 
 def nonCLI(inputfile, outputfile, query):
-    print(inputfile, outputfile)
+    #print(inputfile, outputfile)
     inputDf = pd.read_csv(inputfile)
     #print(inputDf)
     outputDf = pd.DataFrame()
@@ -63,7 +63,7 @@ def nonCLI(inputfile, outputfile, query):
 
     #print(outputDf)
     outputDf.to_csv(outputfile)
-    print("Exported to", outputfile)
+    print("\n\nExported to", outputfile)
 
     
 def exportTable(inputDf, outputfile):
@@ -72,7 +72,7 @@ def exportTable(inputDf, outputfile):
     #print("Will attempt to use function parameter as inputDf, output filename, working...")
     #print(outputDf)
     inputDf.to_csv(outputfile)
-    print("\n\n_____\nExported to", outputfile)
+    print("\n\nExported to", outputfile)
     
 def goPDNQuery(df1):
     print("\n\nPDN QUERY \n\n")
@@ -111,13 +111,34 @@ def goPDNQuery(df1):
         #print(outputDf)
     return outputDf    
 
-def goQuery1(inputDf):
+def goQuery1(df1):
     
-    print("\n\nQUERY 1 ipsilateral impact\n\ninputDf", inputDf, "output")
+    print("\nQUERY 1 ipsilateral impact")
+    
+    # query 1 ipsilateral impact has 6 parts:
+    # 1. straight line trials
+    df1 = filterTable(df1, "Trial", "==", "Straight Line")
+    # 2. no blocks
+    df1 = filterTable(df1, "Blocks", "==", "Null")
+    # 3. at least twenty strides (use fore)
+    df1 = filterTable(df1, "Fore Strides", ">=", "20")
+    # 4. VS > 8.5 (absolute value)
+    df1 = filterTable(df1, "Fore Signed Vector Sum", ">", "8.5", absvalue=True)
+    # 5. diffMIN pelvis >3 (absolute value)
+    df1 = filterTable(df1, "Hind Diff Min Mean", ">", "3", absvalue=True)
+    # 6. sign of diffminpelvis same as sign of diffminhead
+    df1 = filterTable(df1, "Hind Diff Min Mean", "Same Signs", "Fore Diff Min Mean")
 
+    #print("\n\nQUERY 1 after dropna (finished filtering)\n\n", inputDf
     #print("inputDf is a ", type(inputDf))
-    # pandas filtering. 
     
+    return df1
+
+def goQuery1_old(inputDf):
+    
+    print("\n\nQUERY 1 ipsilateral impact\n\ninputDf", inputDf)
+
+
     # query 1 ipsilateral impact has 6 parts:
     # 1. straight line trials
     # 2. no blocks
@@ -164,7 +185,7 @@ def goQuery1(inputDf):
     #print("inputDf is a ", type(inputDf))   
     #print("after where\n\n", inputDf)
     inputDf.dropna(how="all", inplace=True)
-    print("\n\nQUERY 1 after dropna (finished filtering)\n\n", inputDf)
+    #print("\n\nQUERY 1 after dropna (finished filtering)\n\n", inputDf)
     
     #print("inputDf is a ", type(inputDf))
     
@@ -252,7 +273,8 @@ def filterTable(df, column, operator, value, absvalue=False):
     #the conditional operators: (>, <, >=, <=, ==, !=)
     #also, for absolute value there will be more
     if (value == "Null" and column == "Blocks" and operator == "=="):
-        df = df[df['Blocks'].isnull()] #can we make this an inplace=True?
+        df = nullBlocks(df)
+        return df
         # print(df[column])
     elif (operator == "contains"):
         contain_values = df[df[column].str.contains(value, na=False, regex=False)]
