@@ -3,6 +3,8 @@ uploads/
 
 # vs code workspace
 ./queryportal.code-workspace
+horsequery.code-workspace
+package-lock.json
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
