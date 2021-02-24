@@ -66,15 +66,7 @@ def upload_file():
                 if (request.form.get("query") != None):
                     query = request.form.get("query")
                     print(query)
-                    if(query == "query1"):
-                        print("it is first q")
-                        fdb.nonCLI(app.config["FILE_UPLOADS"] + filename, app.config["FILE_UPLOADS"] + parsedFilename, query)
-                    if(query == "query2"):
-                        print("it is second q")
-                        fdb.nonCLI(app.config["FILE_UPLOADS"] + filename, app.config["FILE_UPLOADS"] + parsedFilename, query)
-                    if(query == "pdn"):
-                        print("it is pdn q")
-                        fdb.nonCLI(app.config["FILE_UPLOADS"] + filename, app.config["FILE_UPLOADS"] + parsedFilename, query)
+                    fdb.nonCLI(app.config["FILE_UPLOADS"] + filename, app.config["FILE_UPLOADS"] + parsedFilename, query)
                 else:
                     parameters = []
                     for _, val in request.form.items():

@@ -54,10 +54,16 @@ def nonCLI(inputfile, outputfile, query):
     outputDf = pd.DataFrame()
     print("Will attempt to use function parameters as filenames for ", query, ", working...")
 
-    if (query == "query1"): #ipsi impact / pushoff?
+    if (query == "Ipsilateral Impact"): #ipsi impact / pushoff?
         outputDf = goQuery1(inputDf)
-    if (query == "query2"):
+    if (query == "Ipsilateral Pushoff"):
         outputDf = goQuery2(inputDf)
+    if (query == "Ipsilateral Mostly Impact"):
+        outputDf = goQuery3(inputDf)
+    if (query == "Just Impact"):
+        outputDf = goQuery5(inputDf)
+    if (query == "Just Pushoff"):
+        outputDf = goQuery6(inputDf)
     if (query == "pdn"):
         outputDf = goPDNQuery(inputDf)
 
@@ -96,7 +102,7 @@ def goPDNQuery(df1):
     print("outputDF", outputDf)
     
     # function: give back results from original df1 where the horse names and dates are the same.
-    for index, row in dfPDN1.iterrows():
+    for _, row in dfPDN1.iterrows():
         #print("row.Horse", row.Horse, "row.When", row.When)
         # 1st) take out first date chars ^^.str[:9] above
         # 2nd) str.contains(date))
@@ -134,120 +140,203 @@ def goQuery1(df1):
     
     return df1
 
-def goQuery1_old(inputDf):
+def goQuery2(df1): 
+    print("\nQUERY 2 ipsilateral pushoff")
     
-    print("\n\nQUERY 1 ipsilateral impact\n\ninputDf", inputDf)
-
-
-    # query 1 ipsilateral impact has 6 parts:
     # 1. straight line trials
+    df1 = filterTable(df1, "Trial", "==", "Straight Line")
     # 2. no blocks
-    # 3. at least twenty strides
+    df1 = filterTable(df1, "Blocks", "==", "Null")
+    # 3. at least twenty strides (use fore)
+    df1 = filterTable(df1, "Fore Strides", ">=", "20")
     # 4. VS > 8.5 (absolute value)
-    # 5. diffMIN pelvis >3 (absolute value)
-    # 6. sign of diffminpelvis same as sign of diffminhead
-    # this is ipsilateral? If memory serves
-    
-    # 1. straight lines (can be done in sql but moving to python)
-    straightlineFilter = inputDf["Trial"] == "Straight Line"
-    
-    # 2. no blocks
-    inputDf = inputDf[inputDf['Blocks'].isnull()]
-    
-    # 3. at least twenty strides 
-    # not sure if this is the correct column. some combo of Fore Strides, Hind Strides?
-    foreStrideFilter = inputDf["Fore Strides"] >= 20
-    hindStrideFilter = inputDf["Hind Strides"] >= 20
-    
-    # 4. VS > 8.5 (absolute value). So |vectorsum| > 8.5, or (vectorsum < -8.5 or > 8.5)
-    vectorPosFilter = inputDf["Fore Signed Vector Sum"] > 8.5
-    vectorNegFilter = inputDf["Fore Signed Vector Sum"] < -8.5
-    
-    # 5. diffmin pelvis >3 (absolute value)
-    hinddiffminmeanPosFilter = inputDf["Hind Diff Min Mean"] > 3
-    hinddiffminmeanNegFilter = inputDf["Hind Diff Min Mean"] < -3
-    
-    # 6. diffminpelvis same sign as diffminhead. 
-    # 'Hind Diff Min Mean' 'Fore Diff Min Mean'
-    samesignFilter = inputDf["Hind Diff Min Mean"] * inputDf["Fore Diff Min Mean"] > 0
-    
-    #print("before where\n\n", inputDf)
-    
-    #step 1 thru 3 filter
-    inputDf.where(straightlineFilter & foreStrideFilter, inplace=True)
-    #step 4 vector sum filter
-    inputDf.where(vectorPosFilter | vectorNegFilter, inplace=True)
-    #step 5 diffmaxmeanfilter
-    inputDf.where(hinddiffminmeanPosFilter | hinddiffminmeanNegFilter, inplace=True)
-    #step 6 same sign filter
-    inputDf.where(samesignFilter, inplace=True)
-    
-    #print("inputDf is a ", type(inputDf))   
-    #print("after where\n\n", inputDf)
-    inputDf.dropna(how="all", inplace=True)
-    #print("\n\nQUERY 1 after dropna (finished filtering)\n\n", inputDf)
-    
-    #print("inputDf is a ", type(inputDf))
-    
-    return inputDf
-
-def goQuery2(inputDf):
-    
-    print("\n\nQUERY 2 \n\ninputDf", inputDf)
-
-    #print("inputDf is a ", type(inputDf))
-    # pandas filtering. 
-    
-    # query 2 ipsilateral pushoff has 6 parts:
-    # 1. straight line trials
-    # 2. no blocks
-    # 3. at least twenty strides
-    # 4. VS > 8.5 (absolute value)
-    # 5. diffmax pelvis >3 (absolute value)
+    df1 = filterTable(df1, "Fore Signed Vector Sum", ">", "8.5", absvalue=True)
+    # 5. diffMAX pelvis >3 (absolute value)
+    df1 = filterTable(df1, "Hind Diff Max Mean", ">", "3", absvalue=True)
     # 6. sign of diffmaxpelvis same as sign of diffminhead
+    df1 = filterTable(df1, "Hind Diff Max Mean", "Same Signs", "Fore Diff Min Mean")
+
+    return df1  
+
+
+def goQuery3(df1): 
+    print("\nQUERY 3 ipsilateral mostly impact")
     
-    # 1. straight lines (can be done in sql but moving to python)
-    straightlineFilter = inputDf["Trial"] == "Straight Line"
-    
+    # 1. straight line trials
+    df1 = filterTable(df1, "Trial", "==", "Straight Line")
     # 2. no blocks
-    inputDf = inputDf[inputDf['Blocks'].isnull()]
+    df1 = filterTable(df1, "Blocks", "==", "Null")
+    # 3. at least twenty strides (use fore)
+    df1 = filterTable(df1, "Fore Strides", ">=", "20")
+    # 4. VS > 8.5 (absolute value)
+    df1 = filterTable(df1, "Fore Signed Vector Sum", ">", "8.5", absvalue=True)
+    # 5. diffMIN pelvis >3 (absolute value)
+    df1 = filterTable(df1, "Hind Diff Min Mean", ">", "3", absvalue=True)
+    # 6. diffMAX pelvis >3 (absolute value)
+    df1 = filterTable(df1, "Hind Diff Max Mean", ">", "3", absvalue=True)
+    # 7. sign of diffminpelvis same as sign of diffmaxpelvis
+    df1 = filterTable(df1, "Hind Diff Min Mean", "Same Signs", "Hind Diff Max Mean")
+    # 8. sign of diffminpelvis same as sign of diffminhead
+    df1 = filterTable(df1, "Hind Diff Min Mean", "Same Signs", "Fore Diff Min Mean")
+    # 9. |diffMIN pelvis| > |diffMAX pelvis|
+    # df1 = filterTable(df1, "Hind Diff Min Mean", ">", "Hind Diff Max Mean", absvalue=True)
+
+    return df1
+
+
+def goQuery5(df1):
+    print("\nQUERY 5 just impact")
+
+    # straight line trials
+    df1 = filterTable(df1, "Trial", "==", "Straight Line")
+    # no blocks
+    df1 = filterTable(df1, "Blocks", "==", "Null")
+    # at least twenty strides (use fore)
+    df1 = filterTable(df1, "Fore Strides", ">=", "20")
+    # VS < 8.5 (absolute value)
+    df1 = filterTable(df1, "Fore Signed Vector Sum", "<", "8.5", absvalue=True)
+    # diffMIN pelvis >3 (absolute value)
+    df1 = filterTable(df1, "Hind Diff Min Mean", ">", "3", absvalue=True)
+    # sign of diffminpelvis same as sign of diffminhead
+    df1 = filterTable(df1, "Hind Diff Min Mean", "Same Signs", "Fore Diff Min Mean")
     
-    # 3. at least twenty strides 
-    # not sure if this is the correct column. some combo of Fore Strides, Hind Strides?
-    foreStrideFilter = inputDf["Fore Strides"] >= 20
-    hindStrideFilter = inputDf["Hind Strides"] >= 20
+    return df1
+
+
+def goQuery6(df1):
+    print("\nQUERY 6 just pushoff")
+
+    # straight line trials
+    df1 = filterTable(df1, "Trial", "==", "Straight Line")
+    # no blocks
+    df1 = filterTable(df1, "Blocks", "==", "Null")
+    # at least twenty strides (use fore)
+    df1 = filterTable(df1, "Fore Strides", ">=", "20")
+    # VS < 8.5 (absolute value)
+    df1 = filterTable(df1, "Fore Signed Vector Sum", "<", "8.5", absvalue=True)
+    # diffMAX pelvis >3 (absolute value)
+    df1 = filterTable(df1, "Hind Diff Max Mean", ">", "3", absvalue=True)
+    # sign of diffmaxpelvis same as sign of diffminhead
+    df1 = filterTable(df1, "Hind Diff Max Mean", "Same Signs", "Fore Diff Min Mean")
     
-    # 4. VS > 8.5 (absolute value). So |vectorsum| > 8.5, or (vectorsum < -8.5 or > 8.5)
-    vectorPosFilter = inputDf["Fore Signed Vector Sum"] > 8.5
-    vectorNegFilter = inputDf["Fore Signed Vector Sum"] < -8.5
+    return df1
+
+
+# def goQuery1_old(inputDf):
     
-    # 5. diffmax pelvis >3 (absolute value)
-    hinddiffmaxmeanPosFilter = inputDf["Hind Diff Max Mean"] > 3
-    hinddiffmaxmeanNegFilter = inputDf["Hind Diff Max Mean"] < -3
+#     print("\n\nQUERY 1 ipsilateral impact\n\ninputDf", inputDf)
+
+
+#     # query 1 ipsilateral impact has 6 parts:
+#     # 1. straight line trials
+#     # 2. no blocks
+#     # 3. at least twenty strides
+#     # 4. VS > 8.5 (absolute value)
+#     # 5. diffMIN pelvis >3 (absolute value)
+#     # 6. sign of diffminpelvis same as sign of diffminhead
+#     # this is ipsilateral? If memory serves
     
-    # 6. diffmaxpelvis same sign as diffminhead. 
-    # 'Hind Diff Max Mean' 'Fore Diff Min Mean'
-    samesignFilter = inputDf["Hind Diff Max Mean"] * inputDf["Fore Diff Min Mean"] > 0
+#     # 1. straight lines (can be done in sql but moving to python)
+#     straightlineFilter = inputDf["Trial"] == "Straight Line"
     
-    #print("before where\n\n", inputDf)
+#     # 2. no blocks
+#     inputDf = inputDf[inputDf['Blocks'].isnull()]
     
-    #step 1 thru 3 filter
-    inputDf.where(straightlineFilter & foreStrideFilter & hindStrideFilter, inplace=True)
-    #step 4 vector sum filter
-    inputDf.where(vectorPosFilter | vectorNegFilter, inplace=True)
-    #step 5 diffmaxmeanfilter
-    inputDf.where(hinddiffmaxmeanPosFilter | hinddiffmaxmeanNegFilter, inplace=True)
-    #step 6 same sign filter
-    inputDf.where(samesignFilter, inplace=True)
+#     # 3. at least twenty strides 
+#     # not sure if this is the correct column. some combo of Fore Strides, Hind Strides?
+#     foreStrideFilter = inputDf["Fore Strides"] >= 20
+#     hindStrideFilter = inputDf["Hind Strides"] >= 20
     
-    #print("inputDf is a ", type(inputDf))   
-    #print("after where\n\n", inputDf)
-    inputDf.dropna(how="all", inplace=True)
-    print("\n\nQUERY 2 after dropna (finished filtering)\n\n", inputDf)
+#     # 4. VS > 8.5 (absolute value). So |vectorsum| > 8.5, or (vectorsum < -8.5 or > 8.5)
+#     vectorPosFilter = inputDf["Fore Signed Vector Sum"] > 8.5
+#     vectorNegFilter = inputDf["Fore Signed Vector Sum"] < -8.5
     
-    #print("inputDf is a ", type(inputDf))
+#     # 5. diffmin pelvis >3 (absolute value)
+#     hinddiffminmeanPosFilter = inputDf["Hind Diff Min Mean"] > 3
+#     hinddiffminmeanNegFilter = inputDf["Hind Diff Min Mean"] < -3
+    
+#     # 6. diffminpelvis same sign as diffminhead. 
+#     # 'Hind Diff Min Mean' 'Fore Diff Min Mean'
+#     samesignFilter = inputDf["Hind Diff Min Mean"] * inputDf["Fore Diff Min Mean"] > 0
+    
+#     #print("before where\n\n", inputDf)
+    
+#     #step 1 thru 3 filter
+#     inputDf.where(straightlineFilter & foreStrideFilter, inplace=True)
+#     #step 4 vector sum filter
+#     inputDf.where(vectorPosFilter | vectorNegFilter, inplace=True)
+#     #step 5 diffmaxmeanfilter
+#     inputDf.where(hinddiffminmeanPosFilter | hinddiffminmeanNegFilter, inplace=True)
+#     #step 6 same sign filter
+#     inputDf.where(samesignFilter, inplace=True)
+    
+#     #print("inputDf is a ", type(inputDf))   
+#     #print("after where\n\n", inputDf)
+#     inputDf.dropna(how="all", inplace=True)
+#     #print("\n\nQUERY 1 after dropna (finished filtering)\n\n", inputDf)
+    
+#     #print("inputDf is a ", type(inputDf))
+    
+#     return inputDf
+    
+
+# def goQuery2_old(inputDf):
+    
+#     print("\n\nQUERY 2 \n\ninputDf", inputDf)
+
+#     #print("inputDf is a ", type(inputDf))
+#     # pandas filtering. 
+    
+#     # query 2 ipsilateral pushoff has 6 parts:
+#     # 1. straight line trials
+#     # 2. no blocks
+#     # 3. at least twenty strides
+#     # 4. VS > 8.5 (absolute value)
+#     # 5. diffmax pelvis >3 (absolute value)
+#     # 6. sign of diffmaxpelvis same as sign of diffminhead
+    
+#     # 1. straight lines (can be done in sql but moving to python)
+#     straightlineFilter = inputDf["Trial"] == "Straight Line"
+    
+#     # 2. no blocks
+#     inputDf = inputDf[inputDf['Blocks'].isnull()]
+    
+#     # 3. at least twenty strides 
+#     # not sure if this is the correct column. some combo of Fore Strides, Hind Strides?
+#     foreStrideFilter = inputDf["Fore Strides"] >= 20
+#     hindStrideFilter = inputDf["Hind Strides"] >= 20
+    
+#     # 4. VS > 8.5 (absolute value). So |vectorsum| > 8.5, or (vectorsum < -8.5 or > 8.5)
+#     vectorPosFilter = inputDf["Fore Signed Vector Sum"] > 8.5
+#     vectorNegFilter = inputDf["Fore Signed Vector Sum"] < -8.5
+    
+#     # 5. diffmax pelvis >3 (absolute value)
+#     hinddiffmaxmeanPosFilter = inputDf["Hind Diff Max Mean"] > 3
+#     hinddiffmaxmeanNegFilter = inputDf["Hind Diff Max Mean"] < -3
+    
+#     # 6. diffmaxpelvis same sign as diffminhead. 
+#     # 'Hind Diff Max Mean' 'Fore Diff Min Mean'
+#     samesignFilter = inputDf["Hind Diff Max Mean"] * inputDf["Fore Diff Min Mean"] > 0
+    
+#     #print("before where\n\n", inputDf)
+    
+#     #step 1 thru 3 filter
+#     inputDf.where(straightlineFilter & foreStrideFilter & hindStrideFilter, inplace=True)
+#     #step 4 vector sum filter
+#     inputDf.where(vectorPosFilter | vectorNegFilter, inplace=True)
+#     #step 5 diffmaxmeanfilter
+#     inputDf.where(hinddiffmaxmeanPosFilter | hinddiffmaxmeanNegFilter, inplace=True)
+#     #step 6 same sign filter
+#     inputDf.where(samesignFilter, inplace=True)
+    
+#     #print("inputDf is a ", type(inputDf))   
+#     #print("after where\n\n", inputDf)
+#     inputDf.dropna(how="all", inplace=True)
+#     print("\n\nQUERY 2 after dropna (finished filtering)\n\n", inputDf)
+    
+#     #print("inputDf is a ", type(inputDf))
   
-    return inputDf
+#     return inputDf
 
 def nullBlocks(inputDf):
     
@@ -301,9 +390,17 @@ def filterTable(df, column, operator, value, absvalue=False):
             # can we get the aboslute value of the column in order to make the filter?
             # df1[column].abs()?  
         
+<<<<<<< HEAD
         if (absvalue == True):   #elif?
             #make sure the value is positive otherwise the math is wrong
             
+=======
+        if (absvalue == True):   
+            # TODO: make sure the value is positive otherwise the math is wrong
+            # TODO: allow for two strings comparison 
+            # 9. |diffMIN pelvis| > |diffMAX pelvis|
+            # df1 = filterTable(df1, "Hind Diff Min Mean", ">", "Hind Diff Max Mean", absvalue=True)
+>>>>>>> ba8b972983df6c95abcc8bb5150193513d0a46e4
             if (operator == "=="):
                 tableFilter = df[column] == value
                 tableFilter2 = df[column] == -1*value
@@ -353,114 +450,34 @@ def filterTable(df, column, operator, value, absvalue=False):
     df.dropna(how="all", inplace=True)
     
     return df
-'''
 
-#@dispatch(df, str, str, int)
-def filterTable(df, column, operator, value):
-    print("\nfiltering", column, operator, value)
-    print("value is type of", type(value))
-    #the conditional operators: (>, <, >=, <=, ==, !=)
-    #also, for absolute value there will be more
-    if (value == "Null" and column == "Blocks" and operator == "=="):
-        df = df[df['Blocks'].isnull()] #can we make this an inplace=True?
-        print(df[column])
-    elif (operator == "contains"):
-        contain_values = df[df[column].str.contains(value, na=False, regex=False)]
-        print(contain_values)
-        return contain_values
-    else:
-        print("Is str 1", isinstance(value, str))
-        if(is_number(value) & isinstance(value, str)):
-            value = float(value)
-            print("\/Is str 2", isinstance(value, str))
-        if (operator == "=="):
-            tableFilter = df[column] == value
-        elif (operator == ">"):
-            tableFilter = df[column] > value
-        elif (operator == "<"):
-            tableFilter = df[column] < value
-        elif (operator == ">="):
-            tableFilter = df[column] >= value
-        elif (operator == "<="):
-            tableFilter = df[column] <= value
-        elif (operator == "!="):
-            tableFilter = df[column] != value
-        else:
-            errorstring = "\n\nINPUT::\nOperator not valid and will cause tableFilter reference before assignment"
-            raise ValueError(errorstring)  
-                 
-        df.where(tableFilter, inplace=True)
-    df.dropna(how="all", inplace=True)
+
+# def main():
+#     print("printed from main")
+#     #create parser
+#     parser = argparse.ArgumentParser()
     
-    return df
-'''
-'''
-#@dispatch(df, str, str, str)
-def filterTable(df, column, operator, value):
-    print("ISDIGIT1", value.isdigit())
-    if(value.isdigit() == True):
-        float(value)
-        print("\/ISDIGIT2", value.isdigit())    
-    return filterTable(df, column, operator, value)
-'''
-'''
-def filterTable(df, column, operator, value):
-    print("\nfiltering", column, operator, value)
-    print("value is type of", type(value))
-    #the conditional operators: (>, <, >=, <=, ==, !=)
-    #also, for absolute value there will be more
-    if (operator == "contains"):
-        contain_values = df[df[column].str.contains(value, na=False, regex=False)]
-        print(contain_values)
-        return contain_values
-    else:
-        if (operator == "=="):
-            tableFilter = df[column] == value
-        elif (operator == ">"):
-            tableFilter = df[column] > value
-        elif (operator == "<"):
-            tableFilter = df[column] < value
-        elif (operator == ">="):
-            tableFilter = df[column] >= value
-        elif (operator == "<="):
-            tableFilter = df[column] <= value
-        elif (operator == "!="):
-            tableFilter = df[column] != value
-        else:
-            errorstring = "\n\nINPUT::\nOperator not valid and will cause tableFilter reference before assignment"
-            raise ValueError(errorstring)  
-                 
-        df.where(tableFilter, inplace=True)
-    df.dropna(how="all", inplace=True)
+#     #add arguments to the parser
+#     parser.add_argument("inputfile")
+#     parser.add_argument("outputfile")
     
-    return df
-'''             
-def main():
-    print("printed from main")
-    #create parser
-    parser = argparse.ArgumentParser()
+#     args = parser.parse_args()
     
-    #add arguments to the parser
-    parser.add_argument("inputfile")
-    parser.add_argument("outputfile")
+#     inputDf = pd.read_csv(args.inputfile)
+#     #print(inputDf)
+#     outputDf = pd.DataFrame()
     
-    args = parser.parse_args()
+#     #ANALYSIS MEASUREMENT: vectorSum (type1), diffMinHead (diffMinMean type1), diffMinPelvis (diffMinMean type2), diffMaxMean (type2), diffMinStdDev (type2),
+#     #TRIALhorseID, idGuid, trialPattern, id, 
+#     #HORSE id (horse), name (name), idGuid, 
+#     #OWNER id, firstName, lastName, idGuid, 
+#     #PERSON id, lastName, idGuid
     
-    inputDf = pd.read_csv(args.inputfile)
-    #print(inputDf)
-    outputDf = pd.DataFrame()
-    
-    #ANALYSIS MEASUREMENT: vectorSum (type1), diffMinHead (diffMinMean type1), diffMinPelvis (diffMinMean type2), diffMaxMean (type2), diffMinStdDev (type2),
-    #TRIALhorseID, idGuid, trialPattern, id, 
-    #HORSE id (horse), name (name), idGuid, 
-    #OWNER id, firstName, lastName, idGuid, 
-    #PERSON id, lastName, idGuid
-    
-    print("Will attempt to use arguments as filenames, working...")
-    outputDf = goQuery(inputDf, outputDf)
+#     print("Will attempt to use arguments as filenames, working...")
+#     outputDf = goQuery(inputDf, outputDf)
  
-    outputDf.to_csv(args.outputfile)
-    print("Exported to", args.outputfile)
+#     outputDf.to_csv(args.outputfile)
+#     print("Exported to", args.outputfile)
  
-if __name__ == "__main__":
-    main()
+# if __name__ == "__main__":
+#     main()

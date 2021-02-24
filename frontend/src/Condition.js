@@ -22,6 +22,7 @@ function Condition(props) {
                 <option value=">=">{'>='}</option>
                 <option value="<=">{'<='}</option>
                 <option value="==">{'=='}</option>
+                <option value="Same Signs">{'Same Signs'}</option>
             </select>
             <input type="text" 
                 value={props.condition.value} 
