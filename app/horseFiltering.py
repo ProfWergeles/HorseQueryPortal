@@ -296,8 +296,12 @@ def filterTable(df, column, operator, value, absvalue=False):
         if(is_number(value) & isinstance(value, str)):
             value = float(value)
             # print("\/Is str 2", isinstance(value, str))
+        #if (left and right abs are true)
+        ##pandas dataframe function perhaps:
+            # can we get the aboslute value of the column in order to make the filter?
+            # df1[column].abs()?  
         
-        if (absvalue == True):   
+        if (absvalue == True):   #elif?
             #make sure the value is positive otherwise the math is wrong
             
             if (operator == "=="):

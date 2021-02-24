@@ -1,11 +1,10 @@
 # -*- coding: utf-8 -*-
 import horseFiltering as fdb
 import pandas as pd
-import timeit
 
 #mtable.nonCLI("/home/royal/Desktop/inputabsol.csv", "/home/royal/Desktop/outputheadless.csv")
 
-"""
+
 df1 = fdb.createTable("/home/royal/Desktop/output/LLocator-Results-2021-01-11.csv")
 
 # query 2
@@ -33,7 +32,7 @@ df1 = fdb.filterTable(df1, "Hind Diff Min Mean", "Same Signs", "Fore Diff Min Me
 
 
 fdb.exportTable(df1, "/home/royal/Desktop/output/q1tempfiltered.csv")
-"""
+
 fdb.nonCLI("/home/royal/Desktop/output/LLocator-Results-2021-01-11.csv", "/home/royal/Desktop/output/nwqquery1output.csv", "query1")
 #fdb.nonCLI("/home/royal/Desktop/output/LLocator-Results-2021-01-11.csv", "/home/royal/Desktop/query2output.csv", "query2")
 
