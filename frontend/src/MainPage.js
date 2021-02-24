@@ -6,12 +6,15 @@ import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
 import 'react-tabs/style/react-tabs.css';
 
 import ConditionList from './ConditionList';
+import queries from './presetQueries';
 
 function MainPage() {
     let history = useHistory();
 
+    const [step, setStep] = useState(1);
+
     const [currentForm, setCurrentForm] = useState(0);
-    const [query, setQuery] = useState("query1");
+    const [query, setQuery] = useState("");
 
     const [file, setFile] = useState(null);
     const [columns ,setColumns] = useState([]);
@@ -30,7 +33,18 @@ function MainPage() {
                 value: "",
             }]);
         }
-    }, [columns, conditions]);
+
+        if (query !== "") {
+            queries.get(query).forEach(condition => {
+                setConditions([{
+                    id: condition.id,
+                    parameter: condition.parameter,
+                    comparator: condition.comparator,
+                    value: condition.value,
+                }])
+            });
+        }
+    }, [columns, conditions, query]);
 
     const handleSubmit = e => {
         e.preventDefault();
@@ -169,6 +183,86 @@ function MainPage() {
         reader.readAsText(file);
     }
 
+    const nextStep = (number) => {
+        setStep(step + number);
+    }
+
+    const prevStep = (number) => {
+        setStep(step - number);
+    }
+
+    // switch between steps
+    const switchSteps = (step) => {
+        switch(step) {
+            case 1:
+                return (
+                    <div>
+                        <p>Do you want to use preset query?</p>
+                        <br />
+                        <div onClick={() => nextStep(1)}>Yes</div>
+                        <br />
+                        <br />
+                        <div onClick={() => nextStep(2)}>No</div>
+                    </div>
+                )
+            case 2: 
+                return (
+                    <div>
+                        <select
+                            onChange={e => setQuery(e.target.value)}
+                        >
+                            <option value="">Please select a query</option>
+                            <option value="Ipsilateral Impact">Ipsilateral Impact</option>
+                            <option value="Ipsilateral Pushoff">Ipsilateral Pushoff</option>
+                            <option value="Ipsilateral Mostly Impact">Ipsilateral Mostly Impact</option>
+                            <option value="Just Impact">Just Impact</option>
+                            <option value="Just Pushoff">Just Pushoff</option>
+                            <option value="pdn">PDN Query</option>
+                        </select>
+                        <br />
+                        <br />
+                        <div onClick={() => {
+                            if (query === "") {
+                                alert("Please select a query")
+                            } else {
+                                nextStep(1);
+                            }
+                        }}>Next</div>
+                    </div>
+                )
+            case 3: 
+                return (
+                    <div>
+                        <ConditionList 
+                            conditions={conditions}
+                            parametorChange={parametorChange}
+                            comparatorChange={comparatorChange}
+                            valueChange={valueChange}
+                            deleteCondition={deleteCondition}
+                            columns={columns}
+                        />
+                        <button
+                            className="klButton"
+                            onClick={(e) => {
+                                e.preventDefault();
+                                addCondition({
+                                    id: conditions[conditions.length-1].id + 1 ,
+                                    parameter: columns[0],
+                                    comparator: ">",
+                                    value: "",
+                                })
+                            }}
+                        >
+                            ADD
+                        </button>
+                        <button className="mainPage__browseFileButton" type="submit">{"Upload & Go"}</button>
+                    </div>
+                )
+            default:
+                console.log("step error")
+        }
+    }
+
     return (
         <div className="mainPage">
             <div className="wrapper">
@@ -215,7 +309,7 @@ function MainPage() {
                         <br />
 
                         <TabPanel>
-                            <div>
+                            {/* <div>
                                 <select
                                     onChange={e => setQuery(e.target.value)}
                                 >
@@ -226,40 +320,16 @@ function MainPage() {
                                     <option value="Just Pushoff">Just Pushoff</option>
                                     <option value="pdn">PDN Query</option>
                                 </select>
-                            </div>
+                            </div> */}
                         </TabPanel>
                         <TabPanel>
                             {(columns.length === 0 ? (<div></div>) : 
-                                (<div>
-                                    <ConditionList 
-                                        conditions={conditions}
-                                        parametorChange={parametorChange}
-                                        comparatorChange={comparatorChange}
-                                        valueChange={valueChange}
-                                        deleteCondition={deleteCondition}
-                                        columns={columns}
-                                    />
-                                    <button
-                                        className="klButton"
-                                        onClick={(e) => {
-                                            e.preventDefault();
-                                            addCondition({
-                                                id: conditions[conditions.length-1].id + 1 ,
-                                                parameter: columns[0],
-                                                comparator: ">",
-                                                value: "",
-                                            })
-                                        }}
-                                    >
-                                        ADD
-                                    </button>
-                                </div>)
+                                switchSteps(step)
                             )}
                         </TabPanel>
 
                         <br />
                         <br />
-                        <button className="mainPage__browseFileButton" type="submit">{"Upload & Go"}</button>
                     </form>
                 </Tabs>
                 <br />
