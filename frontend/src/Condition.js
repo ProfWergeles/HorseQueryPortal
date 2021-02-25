@@ -3,6 +3,15 @@ import React from 'react'
 function Condition(props) {
     return (
         <div className="conditions">
+            <button 
+                style={{cursor: "pointer"}}
+                onClick={(e) => {
+                    e.preventDefault();
+                    props.deleteCondition(props.condition.id)
+                }}
+            >
+                DELETE
+            </button>
             <select 
                 value={props.condition.parametor} 
                 onChange={e => props.parametorChange(e, props.condition.id)}
@@ -28,15 +37,13 @@ function Condition(props) {
                 value={props.condition.value} 
                 onChange={e => props.valueChange(e, props.condition.id)}
             />
-            <button 
-                style={{cursor: "pointer"}}
-                onClick={(e) => {
-                    e.preventDefault();
-                    props.deleteCondition(props.condition.id)
-                }}
+            <select 
+                value={props.condition.abs} 
+                onChange={e => props.absChange(e, props.condition.id)}
             >
-                DELETE
-            </button>
+                <option value="no abs">{'No Absolute Value'}</option>
+                <option value="right abs">{'Absolute Value On Right Side'}</option>
+            </select>
             <br />
             <br />
         </div>

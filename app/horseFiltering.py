@@ -241,7 +241,7 @@ def nullBlocks(inputDf):
   
     return inputDf
 
-def filterTable(df, column, operator, value, absvalue=False):
+def filterTable(df, column, operator, value, absvalue="no abs"):
     # print("\nfiltering", column, operator, value)
     #the conditional operators: (>, <, >=, <=, ==, !=)
     #also, for absolute value there will be more
@@ -270,7 +270,7 @@ def filterTable(df, column, operator, value, absvalue=False):
             value = float(value)
             # print("\/Is str 2", isinstance(value, str))
         
-        if (absvalue == True):   
+        if (absvalue == "right abs"):   
             # TODO: make sure the value is positive otherwise the math is wrong
             # TODO: allow for two strings comparison 
             # 9. |diffMIN pelvis| > |diffMAX pelvis|

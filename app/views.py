@@ -88,10 +88,11 @@ def upload_file():
                         field = parameters[j]
                         operator = parameters[j+1]
                         value = parameters[j+2]
+                        absvalue = parameters[j+3]
 
-                        df1 = fdb.filterTable(df1, field, operator, value)
+                        df1 = fdb.filterTable(df1, field, operator, value, absvalue)
 
-                        j+=3
+                        j+=4
 
                     fdb.exportTable(df1, app.config["FILE_UPLOADS"] + parsedFilename)
 

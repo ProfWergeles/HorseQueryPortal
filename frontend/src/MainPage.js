@@ -45,6 +45,7 @@ function MainPage() {
             formData.append(`parametor${condition.id}`, condition.parametor);
             formData.append(`comparator${condition.id}`, condition.comparator);
             formData.append(`value${condition.id}`, condition.value);
+            formData.append(`abs${condition.id}`, condition.abs);
         })
 
         if (!validForm) {
@@ -52,6 +53,7 @@ function MainPage() {
             return;
         }
 
+        console.log(conditions)
 
         axios.post('/api/upload-file', formData)
         .then(res => {
@@ -82,9 +84,21 @@ function MainPage() {
     const comparatorChange = (e, id) => {
         let c = [...conditions];
 
-        for (var i in c) {
+        for (let i in c) {
             if (c[i].id === id) {
                 c[i].comparator = e.target.value;
+            }
+        }
+
+        setConditions(c);
+    }
+
+    const absChange = (e, id) => {
+        let c = [...conditions];
+
+        for (let i in c) {
+            if (c[i].id === id) {
+                c[i].abs = e.target.value;
             }
         }
 
@@ -199,6 +213,7 @@ function MainPage() {
                                 parametor: columns[0],
                                 comparator: ">",
                                 value: "",
+                                abs: "no abs",
                             }]);
                         }}>No</div>
                         <br />
@@ -253,6 +268,7 @@ function MainPage() {
                             parametorChange={parametorChange}
                             comparatorChange={comparatorChange}
                             valueChange={valueChange}
+                            absChange={absChange}
                             deleteCondition={deleteCondition}
                             columns={columns}
                         />
@@ -265,6 +281,7 @@ function MainPage() {
                                     parametor: columns[0],
                                     comparator: ">",
                                     value: "",
+                                    abs: "no abs",
                                 })
                             }}
                         >
