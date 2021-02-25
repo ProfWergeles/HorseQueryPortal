@@ -1,8 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 
 import axios from 'axios';
 import { useHistory } from "react-router-dom";
-import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
 import 'react-tabs/style/react-tabs.css';
 
 import ConditionList from './ConditionList';
@@ -12,8 +11,6 @@ function MainPage() {
     let history = useHistory();
 
     const [step, setStep] = useState(1);
-
-    const [currentForm, setCurrentForm] = useState(0);
     const [query, setQuery] = useState("");
 
     const [file, setFile] = useState(null);
@@ -21,30 +18,6 @@ function MainPage() {
     const [browseFilename, setBrowseFilename] = useState("Browse Files...");
     const [conditions, setConditions] = useState([]);
     const [error, setError] = useState("");
-
-
-    useEffect(() => {
-        // initialize conditions
-        if (columns.length !== 0 && conditions.length === 0) {
-            setConditions([{
-                id: 0,
-                parameter: columns[0],
-                comparator: ">",
-                value: "",
-            }]);
-        }
-
-        if (query !== "") {
-            queries.get(query).forEach(condition => {
-                setConditions([{
-                    id: condition.id,
-                    parameter: condition.parameter,
-                    comparator: condition.comparator,
-                    value: condition.value,
-                }])
-            });
-        }
-    }, [columns, conditions, query]);
 
     const handleSubmit = e => {
         e.preventDefault();
@@ -65,25 +38,20 @@ function MainPage() {
 
         formData.append("myfile", file, filename);
 
-        // if it is two query form
-        if (currentForm === 0) {
-            formData.append("query", query);
-
-        } else {
-            conditions.forEach(condition => {
-                if (condition.value === "") {
-                    validForm = false;
-                }
-                formData.append(`parametor${condition.id}`, condition.parameter);
-                formData.append(`comparator${condition.id}`, condition.comparator);
-                formData.append(`value${condition.id}`, condition.value);
-            })
-    
-            if (!validForm) {
-                setError("Please fill out every field")
-                return;
+        conditions.forEach(condition => {
+            if (condition.value === "") {
+                validForm = false;
             }
+            formData.append(`parametor${condition.id}`, condition.parametor);
+            formData.append(`comparator${condition.id}`, condition.comparator);
+            formData.append(`value${condition.id}`, condition.value);
+        })
+
+        if (!validForm) {
+            setError("Please fill out every field")
+            return;
         }
+
 
         axios.post('/api/upload-file', formData)
         .then(res => {
@@ -99,13 +67,12 @@ function MainPage() {
         });
     }
 
-
     const parametorChange = (e, id) => {
         let c = [...conditions];
 
         for (var i in c) {
             if (c[i].id === id) {
-                c[i].parameter = e.target.value;
+                c[i].parametor = e.target.value;
             }
         }
 
@@ -183,6 +150,33 @@ function MainPage() {
         reader.readAsText(file);
     }
 
+    const populateConditions = () => {
+        if (query !== "") {
+            let tmpConditions = [];
+            queries.get(query).forEach(condition => {
+                // if query includes non-existing column, then skip it.
+                if (!columns.includes(condition.parametor)) {
+                    console.log(condition.parametor)
+                    return;
+                }
+
+                tmpConditions.push(condition);
+            });
+
+            setConditions(tmpConditions)
+        }
+    }
+
+    const reset = () => {
+        setStep(1);
+        setQuery("");
+        setFile(null);
+        setColumns([]);
+        setBrowseFilename("Browse Files...");
+        setConditions([]);
+        setError("")
+    }
+
     const nextStep = (number) => {
         setStep(step + number);
     }
@@ -197,18 +191,25 @@ function MainPage() {
             case 1:
                 return (
                     <div>
-                        <p>Do you want to use preset query?</p>
+                        <p className="header">Do you want to use preset query?</p>
+                        <div className="klButton" onClick={() => {
+                            nextStep(2)
+                            setConditions([{
+                                id: 0,
+                                parametor: columns[0],
+                                comparator: ">",
+                                value: "",
+                            }]);
+                        }}>No</div>
                         <br />
-                        <div onClick={() => nextStep(1)}>Yes</div>
-                        <br />
-                        <br />
-                        <div onClick={() => nextStep(2)}>No</div>
+                        <div className="klButton" onClick={() => nextStep(1)}>Yes</div>
                     </div>
                 )
             case 2: 
                 return (
                     <div>
                         <select
+                            value={query}
                             onChange={e => setQuery(e.target.value)}
                         >
                             <option value="">Please select a query</option>
@@ -221,10 +222,15 @@ function MainPage() {
                         </select>
                         <br />
                         <br />
-                        <div onClick={() => {
+                        <div className="klButton" onClick={() => {
+                            prevStep(1)
+                        }}>Back</div>
+                        <br />
+                        <div className="klButton" onClick={() => {
                             if (query === "") {
                                 alert("Please select a query")
                             } else {
+                                populateConditions();
                                 nextStep(1);
                             }
                         }}>Next</div>
@@ -233,6 +239,15 @@ function MainPage() {
             case 3: 
                 return (
                     <div>
+                        <div onClick={() => {
+                            prevStep(1);
+                        }}>Back</div>
+                        <br />
+                        <div onClick={() => {
+                            setStep(1);
+                        }}>Start Over</div>
+                        <br />
+                        <br />
                         <ConditionList 
                             conditions={conditions}
                             parametorChange={parametorChange}
@@ -247,7 +262,7 @@ function MainPage() {
                                 e.preventDefault();
                                 addCondition({
                                     id: conditions[conditions.length-1].id + 1 ,
-                                    parameter: columns[0],
+                                    parametor: columns[0],
                                     comparator: ">",
                                     value: "",
                                 })
@@ -266,72 +281,39 @@ function MainPage() {
     return (
         <div className="mainPage">
             <div className="wrapper">
-                <Tabs onSelect={(currentIndex) => setCurrentForm(currentIndex)}>
-                    <TabList>
-                    <Tab>Preset Query</Tab>
-                    <Tab>Dynamic Query</Tab>
-                    </TabList>
+                <br />
+                <h3 className="header">Upload a CSV file</h3>
+                <form onSubmit={handleSubmit}>
+                    <div className="mainPage__browseFile">
+                        <label htmlFor="file" className="mainPage__browseFileButton">{browseFilename}</label>
+                    </div>
+                    <input
+                        id="file" 
+                        type="file" 
+                        onChange={e => {
+                            setError("");
+                            if (e.target.files[0] === undefined) {
+                                reset();
+                                return;
+                            }
 
+                            setFile(e.target.files[0]);
+                            setBrowseFilename(e.target.files[0].name);
+                            parseColumns(e.target.files[0]);
+                        }}
+                    />
+                    
                     <br />
-                    <h3 className="header">Upload a CSV file</h3>
-                    <form onSubmit={handleSubmit}>
-                        <div className="mainPage__browseFile">
-                            <label htmlFor="file" className="mainPage__browseFileButton">{browseFilename}</label>
-                        </div>
-                        <input 
-                            id="file" 
-                            type="file" 
-                            onChange={e => {
-                                setError("");
-                                if (e.target.files[0] === undefined) {
-                                    setBrowseFilename("Browse Files...");
-                                    setFile(null);
-                                    setColumns([]);
-                                    setConditions([{
-                                        id: 0,
-                                        parameter: "",
-                                        comparator: "",
-                                        value: "",
-                                    }]);
-                                    return;
-                                }
-
-                                setFile(e.target.files[0]);
-                                setBrowseFilename(e.target.files[0].name);
-                                parseColumns(e.target.files[0]);
-                            }}
-                        />
-                        
-                        <br />
-                        <br />
-                        <div style={{color: "red"}}>{error}</div>
-                        <br />
-                        <br />
-
-                        <TabPanel>
-                            {/* <div>
-                                <select
-                                    onChange={e => setQuery(e.target.value)}
-                                >
-                                    <option value="Ipsilateral Impact">Ipsilateral Impact</option>
-                                    <option value="Ipsilateral Pushoff">Ipsilateral Pushoff</option>
-                                    <option value="Ipsilateral Mostly Impact">Ipsilateral Mostly Impact</option>
-                                    <option value="Just Impact">Just Impact</option>
-                                    <option value="Just Pushoff">Just Pushoff</option>
-                                    <option value="pdn">PDN Query</option>
-                                </select>
-                            </div> */}
-                        </TabPanel>
-                        <TabPanel>
-                            {(columns.length === 0 ? (<div></div>) : 
-                                switchSteps(step)
-                            )}
-                        </TabPanel>
-
-                        <br />
-                        <br />
-                    </form>
-                </Tabs>
+                    <br />
+                    <div style={{color: "red"}}>{error}</div>
+                    <br />
+                    <br />
+                    {(columns.length === 0 ? (<div></div>) : 
+                        switchSteps(step)
+                    )}
+                    <br />
+                    <br />
+                </form>
                 <br />
                 <br />
             </div>
