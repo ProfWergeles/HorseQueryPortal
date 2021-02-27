@@ -27,9 +27,10 @@
 2. `sudo apt install python3-pip` to install pip3
 3. `pip install Flask` to install Flask (if `pip` is not working, try `pip3 install Flask`)
 4. `curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.35.3/install.sh | bash` to install nvm
-5. `nvm install node` to install node
-6. `sudo apt install nodejs npm` to install npm
-7. `sudo apt install nginx` to install nginx
+5. `source ~/.profile`
+6. `nvm install stable` to install node
+7. `sudo apt install nodejs npm` to install npm
+8. `sudo apt install nginx` to install nginx
 
 
 ### Frontend setup
