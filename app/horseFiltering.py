@@ -385,12 +385,22 @@ def filterTable(df, column, operator, value, absvalue=False):
         if(is_number(value) & isinstance(value, str)):
             value = float(value)
             # print("\/Is str 2", isinstance(value, str))
+        #if (left and right abs are true)
+        ##pandas dataframe function perhaps:
+            # can we get the aboslute value of the column in order to make the filter?
+            # df1[column].abs()?  
         
+<<<<<<< HEAD
+        if (absvalue == True):   #elif?
+            #make sure the value is positive otherwise the math is wrong
+            
+=======
         if (absvalue == True):   
             # TODO: make sure the value is positive otherwise the math is wrong
             # TODO: allow for two strings comparison 
             # 9. |diffMIN pelvis| > |diffMAX pelvis|
             # df1 = filterTable(df1, "Hind Diff Min Mean", ">", "Hind Diff Max Mean", absvalue=True)
+>>>>>>> ba8b972983df6c95abcc8bb5150193513d0a46e4
             if (operator == "=="):
                 tableFilter = df[column] == value
                 tableFilter2 = df[column] == -1*value
