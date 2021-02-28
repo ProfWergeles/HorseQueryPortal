@@ -38,22 +38,26 @@ function MainPage() {
 
         formData.append("myfile", file, filename);
 
-        conditions.forEach(condition => {
-            if (condition.value === "") {
-                validForm = false;
+        if (query === "pdn") {
+            formData.append("query", query);
+        } else {
+            conditions.forEach(condition => {
+                if (condition.value === "") {
+                    validForm = false;
+                }
+                formData.append(`parametor${condition.id}`, condition.parametor);
+                formData.append(`comparator${condition.id}`, condition.comparator);
+                formData.append(`value${condition.id}`, condition.value);
+                formData.append(`abs${condition.id}`, condition.abs);
+            })
+    
+            if (!validForm) {
+                setError("Please fill out every field");
+                return;
             }
-            formData.append(`parametor${condition.id}`, condition.parametor);
-            formData.append(`comparator${condition.id}`, condition.comparator);
-            formData.append(`value${condition.id}`, condition.value);
-            formData.append(`abs${condition.id}`, condition.abs);
-        })
-
-        if (!validForm) {
-            setError("Please fill out every field")
-            return;
+    
+            console.log(conditions);
         }
-
-        console.log(conditions)
 
         axios.post('/api/upload-file', formData)
         .then(res => {
@@ -165,6 +169,9 @@ function MainPage() {
     }
 
     const populateConditions = () => {
+        if (query === "pdn") {
+            return;
+        }
         if (query !== "") {
             let tmpConditions = [];
             queries.get(query).forEach(condition => {
@@ -263,7 +270,8 @@ function MainPage() {
                         }}>Start Over</div>
                         <br />
                         <br />
-                        <ConditionList 
+                        {query === "pdn" ? (<div>You chose PDN query</div>) : (<div>
+                            <ConditionList 
                             conditions={conditions}
                             parametorChange={parametorChange}
                             comparatorChange={comparatorChange}
@@ -271,22 +279,23 @@ function MainPage() {
                             absChange={absChange}
                             deleteCondition={deleteCondition}
                             columns={columns}
-                        />
-                        <button
-                            className="klButton"
-                            onClick={(e) => {
-                                e.preventDefault();
-                                addCondition({
-                                    id: conditions[conditions.length-1].id + 1 ,
-                                    parametor: columns[0],
-                                    comparator: ">",
-                                    value: "",
-                                    abs: "no abs",
-                                })
-                            }}
-                        >
-                            ADD
-                        </button>
+                            />
+                            <button
+                                className="klButton"
+                                onClick={(e) => {
+                                    e.preventDefault();
+                                    addCondition({
+                                        id: conditions[conditions.length-1].id + 1 ,
+                                        parametor: columns[0],
+                                        comparator: ">",
+                                        value: "",
+                                        abs: "no abs",
+                                    })
+                                }}
+                            >
+                                ADD
+                            </button>
+                        </div>)}
                         <button className="mainPage__browseFileButton" type="submit">{"Upload & Go"}</button>
                     </div>
                 )
