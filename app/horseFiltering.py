@@ -47,6 +47,7 @@ def appendCSV(workingDf, inputfile):
     workingDf = pd.concat([workingDf, df2], ignore_index=True)
     return workingDf  
 
+# what should we rename this function to? 
 def nonCLI(inputfile, outputfile, query):
     #print(inputfile, outputfile)
     inputDf = pd.read_csv(inputfile)
@@ -65,7 +66,11 @@ def nonCLI(inputfile, outputfile, query):
     if (query == "Just Pushoff"):
         outputDf = goQuery6(inputDf)
     if (query == "pdn"):
+        #we should also rename this function and the above string. 
+        #maybe "PDN + Extra Blocks?"
         outputDf = goPDNQuery(inputDf)
+    if (query == "Only PDN"):
+        outputDf = queryOnlyPDN(inputDf)
 
     #print(outputDf)
     outputDf.to_csv(outputfile)
@@ -73,12 +78,12 @@ def nonCLI(inputfile, outputfile, query):
 
     
 def exportTable(inputDf, outputfile):
-    #print("will export to", outputfile)
+    print("\nExporting to", outputfile)
     #print("input data:", inputDf)
-    #print("Will attempt to use function parameter as inputDf, output filename, working...")
-    #print(outputDf)
+    #print("Will attempt to usse function parameter as inputDf, output filename, working...")
+    print(inputDf)
     inputDf.to_csv(outputfile)
-    print("\n\nExported to", outputfile)
+    print("\nExported to", outputfile)
     
 def goPDNQuery(df1):
     print("\n\nPDN QUERY \n\n")
@@ -90,8 +95,10 @@ def goPDNQuery(df1):
     mask = (dfPDN1['Blocks'].str.len() > 7)
     dfPDN1 = dfPDN1.loc[mask]
     dfPDN1 = dfPDN1.loc[:, ['Horse', 'When']]
+
     # need to slice the date (first 8 characters) out of the 'When' column and keep.
     # TODO: dates are not consistnent string lengths
+
     df1['When'] = df1['When'].str[:9]
     dfPDN1['When'] = dfPDN1['When'].str[:9]
     dfPDN1 = pd.DataFrame.drop_duplicates(dfPDN1)
@@ -104,9 +111,6 @@ def goPDNQuery(df1):
     # function: give back results from original df1 where the horse names and dates are the same.
     for _, row in dfPDN1.iterrows():
         #print("row.Horse", row.Horse, "row.When", row.When)
-        # 1st) take out first date chars ^^.str[:9] above
-        # 2nd) str.contains(date))
-        
         tempDf =  df1.copy()
         
         tempDf = filterTable(tempDf, "Horse", "==", row.Horse)
@@ -115,44 +119,55 @@ def goPDNQuery(df1):
         #add row to output DF
         outputDf = outputDf.append(tempDf)
         #print(outputDf)
-    return outputDf   
+    return outputDf
 
 def queryOnlyPDN(df1):
-    print("\n\nPDN QUERY only \n\n")
+    print("\n\nPDN ONLY query \n\n")
     df1 = filterTable(df1, "Trial", "==", "Straight Line")
     df1 = filterTable(df1, "Fore Strides", ">", "19")
-    dfPDN1 = filterTable(df1, "Blocks", "contains", "PDN")
-    # standard in Blocks is "RH: PDN" for example. If there are more than 7 characters
-    # in Blocks, that means that there is more than just 1 block. 
+    # This filter for when there is only blocks of format "*PDN*" (Where * is wildcard)
+    allPDNdf = filterTable(df1, "Blocks", "contains", "PDN")
+
+    # dfPDN1 is the df that will have the list of trials that have more than a PDN block for any trials that day.
+    # so, dfPDN1 will be the trials that have more than 7 characters, therefore more than just the PDN block.
+    dfPDN1 = allPDNdf.copy()
+
     mask = (dfPDN1['Blocks'].str.len() > 7)
     dfPDN1 = dfPDN1.loc[mask]
     dfPDN1 = dfPDN1.loc[:, ['Horse', 'When']]
+
     # need to slice the date (first 8 characters) out of the 'When' column and keep.
     # TODO: dates are not consistnent string lengths
+    # 1st) take out first date chars ^^.str[:9] above
+    # 2nd) str.contains(date))
     df1['When'] = df1['When'].str[:9]
     dfPDN1['When'] = dfPDN1['When'].str[:9]
     dfPDN1 = pd.DataFrame.drop_duplicates(dfPDN1)
     # now dfPDN1 should just be the list of horse names and dates and times. 
-    print("About to get all trials for Names on certain Date")
     
-    outputDf = pd.DataFrame(columns=df1.columns)
-    print("outputDF", outputDf)
+    # About to check all trials for Names on certain Date, then add the name of horses to the df
+    # if there aren't any other blocks for that horse.
     
-    # function: give back results from original df1 where the horse names and dates are the same.
+    #outputDf = pd.DataFrame(columns=df1.columns)
+    #outputDf = allPDNdf.copy()
+    #print("allPDNdf", allPDNdf)
+    exportTable(allPDNdf, "/home/royal/Desktop/ALLpdn_SAA_JNS.csv")
+    # remove horses from output that appear in the dfPDN1['Blocks'].str.len() > 7
+    # filter out dfPDN1 
+
+    # function: give back results from original df1 where the horse names and dates are the same 
+    # && where that horse had no other blocks on that day.
+    
+    # function: check the pdn1 
     for _, row in dfPDN1.iterrows():
-        print("row.Horse", row.Horse, "row.When", row.When)
-        # 1st) take out first date chars ^^.str[:9] above
-        # 2nd) str.contains(date))
-        
-        tempDf =  df1.copy()
-        
-        tempDf = filterTable(tempDf, "Horse", "==", row.Horse)
-        tempDf = filterTable(tempDf, "When", "==", row.When)
-        #print(tempDf)
-        #add row to output DF
-        outputDf = outputDf.append(tempDf)
-        #print(outputDf)
-    return outputDf    
+        filter1 = allPDNdf["Horse"] != row.Horse
+        filter2 = allPDNdf["When"] != row.When
+        allPDNdf.where(filter1 & filter2, inplace=True)
+        #print("filter1", filter1)
+        #print("filter2", filter2)
+    outputDf = allPDNdf.copy()
+    outputDf.dropna(how="all", inplace=True)
+    return outputDf   
 
 def goQuery1(df1):
     

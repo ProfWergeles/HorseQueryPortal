@@ -5,8 +5,12 @@ import pandas as pd
 #mtable.nonCLI("/home/royal/Desktop/inputabsol.csv", "/home/royal/Desktop/outputheadless.csv")
 
 
-df1 = fdb.createTable("/home/royal/Documents/IndependentProjects/Spreadsheet SAA tablet 060121.csv")
-df1 = fdb.appendCSV("/home/royal/Documents/IndependentProjects/Spreadsheet JNS tablet 100121.csv")
+df1 = fdb.createTable("/home/royal/Documents/IndependentProjects/Horse/Spreadsheet SAA tablet 060121.csv")
+df1 = fdb.appendCSV(df1, "/home/royal/Documents/IndependentProjects/Horse/Spreadsheet JNS tablet 100121.csv")
+fdb.exportTable(df1, "/home/royal/Desktop/inputpdn_SAA_JNS.csv")
+df2 = df1.copy()
+df2 = fdb.goPDNQuery(df2)
+fdb.exportTable(df2, "/home/royal/Desktop/MORETHAN1pdn_SAA_JNS.csv")
 
 # query 2
 # 1. straight line trials
@@ -31,11 +35,11 @@ df1 = fdb.filterTable(df1, "Hind Diff Min Mean", ">", "3", absvalue=True)
 # 6. sign of diffminpelvis same as sign of diffminhead
 df1 = fdb.filterTable(df1, "Hind Diff Min Mean", "Same Signs", "Fore Diff Min Mean")
 """
-df1 = fdb.goPDNquery(df1)
+df1 = fdb.queryOnlyPDN(df1)
 
-fdb.exportTable(df1, "/home/royal/Desktop/output/q1tempfiltered.csv")
+fdb.exportTable(df1, "/home/royal/Desktop/outputONLYpdn_SAA_JNS.csv")
 
-fdb.nonCLI("/home/royal/Desktop/output/LLocator-Results-2021-01-11.csv", "/home/royal/Desktop/output/nwqquery1output.csv", "query1")
+#fdb.nonCLI("/home/royal/Desktop/output/LLocator-Results-2021-01-11.csv", "/home/royal/Desktop/output/nwqquery1output.csv", "query1")
 #fdb.nonCLI("/home/royal/Desktop/output/LLocator-Results-2021-01-11.csv", "/home/royal/Desktop/query2output.csv", "query2")
 
 """
