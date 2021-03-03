@@ -115,6 +115,43 @@ def goPDNQuery(df1):
         #add row to output DF
         outputDf = outputDf.append(tempDf)
         #print(outputDf)
+    return outputDf   
+
+def queryOnlyPDN(df1):
+    print("\n\nPDN QUERY only \n\n")
+    df1 = filterTable(df1, "Trial", "==", "Straight Line")
+    df1 = filterTable(df1, "Fore Strides", ">", "19")
+    dfPDN1 = filterTable(df1, "Blocks", "contains", "PDN")
+    # standard in Blocks is "RH: PDN" for example. If there are more than 7 characters
+    # in Blocks, that means that there is more than just 1 block. 
+    mask = (dfPDN1['Blocks'].str.len() > 7)
+    dfPDN1 = dfPDN1.loc[mask]
+    dfPDN1 = dfPDN1.loc[:, ['Horse', 'When']]
+    # need to slice the date (first 8 characters) out of the 'When' column and keep.
+    # TODO: dates are not consistnent string lengths
+    df1['When'] = df1['When'].str[:9]
+    dfPDN1['When'] = dfPDN1['When'].str[:9]
+    dfPDN1 = pd.DataFrame.drop_duplicates(dfPDN1)
+    # now dfPDN1 should just be the list of horse names and dates and times. 
+    print("About to get all trials for Names on certain Date")
+    
+    outputDf = pd.DataFrame(columns=df1.columns)
+    print("outputDF", outputDf)
+    
+    # function: give back results from original df1 where the horse names and dates are the same.
+    for _, row in dfPDN1.iterrows():
+        print("row.Horse", row.Horse, "row.When", row.When)
+        # 1st) take out first date chars ^^.str[:9] above
+        # 2nd) str.contains(date))
+        
+        tempDf =  df1.copy()
+        
+        tempDf = filterTable(tempDf, "Horse", "==", row.Horse)
+        tempDf = filterTable(tempDf, "When", "==", row.When)
+        #print(tempDf)
+        #add row to output DF
+        outputDf = outputDf.append(tempDf)
+        #print(outputDf)
     return outputDf    
 
 def goQuery1(df1):
@@ -390,17 +427,11 @@ def filterTable(df, column, operator, value, absvalue=False):
             # can we get the aboslute value of the column in order to make the filter?
             # df1[column].abs()?  
         
-<<<<<<< HEAD
-        if (absvalue == True):   #elif?
-            #make sure the value is positive otherwise the math is wrong
-            
-=======
         if (absvalue == True):   
             # TODO: make sure the value is positive otherwise the math is wrong
             # TODO: allow for two strings comparison 
             # 9. |diffMIN pelvis| > |diffMAX pelvis|
             # df1 = filterTable(df1, "Hind Diff Min Mean", ">", "Hind Diff Max Mean", absvalue=True)
->>>>>>> ba8b972983df6c95abcc8bb5150193513d0a46e4
             if (operator == "=="):
                 tableFilter = df[column] == value
                 tableFilter2 = df[column] == -1*value

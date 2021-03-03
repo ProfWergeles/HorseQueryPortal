@@ -5,7 +5,8 @@ import pandas as pd
 #mtable.nonCLI("/home/royal/Desktop/inputabsol.csv", "/home/royal/Desktop/outputheadless.csv")
 
 
-df1 = fdb.createTable("/home/royal/Desktop/output/LLocator-Results-2021-01-11.csv")
+df1 = fdb.createTable("/home/royal/Documents/IndependentProjects/Spreadsheet SAA tablet 060121.csv")
+df1 = fdb.appendCSV("/home/royal/Documents/IndependentProjects/Spreadsheet JNS tablet 100121.csv")
 
 # query 2
 # 1. straight line trials
@@ -15,6 +16,7 @@ df1 = fdb.createTable("/home/royal/Desktop/output/LLocator-Results-2021-01-11.cs
 # 5. diffmax pelvis >3 (absolute value)
 # 6. sign of diffmaxpelvis same as sign of diffminhead
 
+"""
 # query 1 ipsilateral impact has 6 parts:
 # 1. straight line trials
 df1 = fdb.filterTable(df1, "Trial", "==", "Straight Line")
@@ -28,8 +30,8 @@ df1 = fdb.filterTable(df1, "Fore Signed Vector Sum", ">", "8.5", absvalue=True)
 df1 = fdb.filterTable(df1, "Hind Diff Min Mean", ">", "3", absvalue=True)
 # 6. sign of diffminpelvis same as sign of diffminhead
 df1 = fdb.filterTable(df1, "Hind Diff Min Mean", "Same Signs", "Fore Diff Min Mean")
-
-
+"""
+df1 = fdb.goPDNquery(df1)
 
 fdb.exportTable(df1, "/home/royal/Desktop/output/q1tempfiltered.csv")
 
