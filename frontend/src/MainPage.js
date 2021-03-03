@@ -38,7 +38,7 @@ function MainPage() {
 
         formData.append("myfile", file, filename);
 
-        if (query === "pdn") {
+        if (query === "pdn" || query === "Only PDN") {
             formData.append("query", query);
         } else {
             conditions.forEach(condition => {
@@ -169,7 +169,7 @@ function MainPage() {
     }
 
     const populateConditions = () => {
-        if (query === "pdn") {
+        if (query === "pdn" || query === "Only PDN") {
             return;
         }
         if (query !== "") {
@@ -241,6 +241,7 @@ function MainPage() {
                             <option value="Just Impact">Just Impact</option>
                             <option value="Just Pushoff">Just Pushoff</option>
                             <option value="pdn">PDN Query</option>
+                            <option value="Only PDN">Only PDN</option>
                         </select>
                         <br />
                         <br />
