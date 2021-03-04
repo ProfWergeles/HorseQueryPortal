@@ -410,7 +410,7 @@ def nullBlocks(inputDf):
   
     return inputDf
 
-def filterTable(df, column, operator, value, absvalue=False):
+def filterTable(df, column, operator, value, absvalue="None"):
     # print("\nfiltering", column, operator, value)
     #the conditional operators: (>, <, >=, <=, ==, !=)
     #also, for absolute value there will be more
@@ -443,7 +443,7 @@ def filterTable(df, column, operator, value, absvalue=False):
             # can we get the aboslute value of the column in order to make the filter?
             # df1[column].abs()?  
         
-        if (absvalue == True):   
+        if (absvalue == "Right"):   
             # TODO: make sure the value is positive otherwise the math is wrong
             # TODO: allow for two strings comparison 
             # 9. |diffMIN pelvis| > |diffMAX pelvis|
@@ -476,7 +476,7 @@ def filterTable(df, column, operator, value, absvalue=False):
                 errorstring = "\n\nINPUT::\nOperator not valid and will cause tableFilter reference before assignment"
                 raise ValueError(errorstring)   
                 
-        else:    
+        else:    #abs is none
             if (operator == "=="):
                 tableFilter = df[column] == value
             elif (operator == ">"):
