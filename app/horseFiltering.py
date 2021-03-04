@@ -377,7 +377,8 @@ def goQuery6(df1):
 #     #step 4 vector sum filter
 #     inputDf.where(vectorPosFilter | vectorNegFilter, inplace=True)
 #     #step 5 diffmaxmeanfilter
-#     inputDf.where(hinddiffmaxmeanPosFilter | hinddiffmaxmeanNegFilter, inplace=True)
+#     inputDf.where(hinddiffmaxmeanPosFilter | hin = filterTable(tempDf, "Horse", "!=", row.Horse)
+
 #     #step 6 same sign filter
 #     inputDf.where(samesignFilter, inplace=True)
     

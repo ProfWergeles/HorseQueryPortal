@@ -13,6 +13,7 @@ function ConditionList(props) {
                         parametorChange={props.parametorChange}
                         comparatorChange={props.comparatorChange}
                         valueChange={props.valueChange}
+                        absChange={props.absChange}
                         deleteCondition={props.deleteCondition}
                         columns={props.columns}
                     />

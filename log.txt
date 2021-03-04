@@ -110,3 +110,7 @@ to-dos:
 solution: when do get request from frontend, append timestamp on the file name.
 ** issue resolved
 
+
+2/24:
+
+1. if preset query contains non-existing column, what to do?
