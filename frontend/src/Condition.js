@@ -41,8 +41,8 @@ function Condition(props) {
                 value={props.condition.abs} 
                 onChange={e => props.absChange(e, props.condition.id)}
             >
-                <option value="no abs">{'No Absolute Value'}</option>
-                <option value="right abs">{'Absolute Value On Right Side'}</option>
+                <option value="None">{'No Absolute Value'}</option>
+                <option value="Right">{'Absolute Value On Right Side'}</option>
             </select>
             <br />
             <br />

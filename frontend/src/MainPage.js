@@ -220,7 +220,7 @@ function MainPage() {
                                 parametor: columns[0],
                                 comparator: ">",
                                 value: "",
-                                abs: "no abs",
+                                abs: "None",
                             }]);
                         }}>No</div>
                         <br />
@@ -290,7 +290,7 @@ function MainPage() {
                                         parametor: columns[0],
                                         comparator: ">",
                                         value: "",
-                                        abs: "no abs",
+                                        abs: "None",
                                     })
                                 }}
                             >

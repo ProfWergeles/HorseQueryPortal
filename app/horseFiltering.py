@@ -151,7 +151,7 @@ def queryOnlyPDN(df1):
     #outputDf = pd.DataFrame(columns=df1.columns)
     #outputDf = allPDNdf.copy()
     #print("allPDNdf", allPDNdf)
-    exportTable(allPDNdf, "/home/royal/Desktop/ALLpdn_SAA_JNS.csv")
+    # exportTable(allPDNdf, "/home/royal/Desktop/ALLpdn_SAA_JNS.csv")
     # remove horses from output that appear in the dfPDN1['Blocks'].str.len() > 7
     # filter out dfPDN1 
 
