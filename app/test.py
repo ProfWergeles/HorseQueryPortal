@@ -8,9 +8,9 @@ import pandas as pd
 df1 = fdb.createTable("/home/royal/Documents/IndependentProjects/Horse/Spreadsheet SAA tablet 060121.csv")
 df1 = fdb.appendCSV(df1, "/home/royal/Documents/IndependentProjects/Horse/Spreadsheet JNS tablet 100121.csv")
 fdb.exportTable(df1, "/home/royal/Desktop/inputpdn_SAA_JNS.csv")
-#df2 = df1.copy()
-#df2 = fdb.goPDNQuery(df2)
-#fdb.exportTable(df2, "/home/royal/Desktop/MORETHAN1pdn_SAA_JNS.csv")
+# df2 = df1.copy()
+# df2 = fdb.goPDNQuery(df2)
+# fdb.exportTable(df2, "/home/royal/Desktop/goPDNquery.csv")
 
 # query 2
 # 1. straight line trials
@@ -36,6 +36,8 @@ df1 = fdb.filterTable(df1, "Hind Diff Min Mean", ">", "3", absvalue=True)
 df1 = fdb.filterTable(df1, "Hind Diff Min Mean", "Same Signs", "Fore Diff Min Mean")
 """
 df1 = fdb.queryOnlyPDN(df1)
+#df1 = fdb.queryOnlyPDN(df1) #merged locator -- blocks PDN is 1
+#df1 = fdb.queryOnlyPDN(df1) #mizzou data
 
 fdb.exportTable(df1, "/home/royal/Desktop/outputONLYpdn_SAA_JNS.csv")
 

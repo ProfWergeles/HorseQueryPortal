@@ -85,10 +85,14 @@ def exportTable(inputDf, outputfile):
     inputDf.to_csv(outputfile)
     print("\nExported to", outputfile)
     
-def goPDNQuery(df1):
+def goPDNQuery(inputDf):
     print("\n\nPDN QUERY \n\n")
+
+    df1 = inputDf.copy()
     df1 = filterTable(df1, "Trial", "==", "Straight Line")
     df1 = filterTable(df1, "Fore Strides", ">", "19")
+    #TODO ^ move this to later in the function 
+
     dfPDN1 = filterTable(df1, "Blocks", "contains", "PDN")
     # standard in Blocks is "RH: PDN" for example. If there are more than 7 characters
     # in Blocks, that means that there is more than just 1 block. 
@@ -121,53 +125,67 @@ def goPDNQuery(df1):
         #print(outputDf)
     return outputDf
 
-def queryOnlyPDN(df1):
+def queryOnlyPDN(inputDf):
     print("\n\nPDN ONLY query \n\n")
-    df1 = filterTable(df1, "Trial", "==", "Straight Line")
-    df1 = filterTable(df1, "Fore Strides", ">", "19")
-    # This filter for when there is only blocks of format "*PDN*" (Where * is wildcard)
-    allPDNdf = filterTable(df1, "Blocks", "contains", "PDN")
 
-    # dfPDN1 is the df that will have the list of trials that have more than a PDN block for any trials that day.
-    # so, dfPDN1 will be the trials that have more than 7 characters, therefore more than just the PDN block.
-    dfPDN1 = allPDNdf.copy()
+    #inputDf = filterTable(inputDf, "Trial", "==", "Straight Line")
+    #inputDf = filterTable(inputDf, "Fore Strides", ">", "19")
+    #TODO ^ move this to later in the function 
 
-    mask = (dfPDN1['Blocks'].str.len() > 7)
-    dfPDN1 = dfPDN1.loc[mask]
-    dfPDN1 = dfPDN1.loc[:, ['Horse', 'When']]
+    df1 = inputDf.copy()
+    df2 = inputDf.copy()
+    noblocksdf = inputDf.copy()
+    morethanPDNdf = inputDf.copy()
 
-    # need to slice the date (first 8 characters) out of the 'When' column and keep.
-    # TODO: dates are not consistnent string lengths
-    # 1st) take out first date chars ^^.str[:9] above
-    # 2nd) str.contains(date))
-    df1['When'] = df1['When'].str[:9]
-    dfPDN1['When'] = dfPDN1['When'].str[:9]
-    dfPDN1 = pd.DataFrame.drop_duplicates(dfPDN1)
-    # now dfPDN1 should just be the list of horse names and dates and times. 
+    # anyPDNdf from df1, which is any trial that contains PDN.
+    anyPDNdf = filterTable(df1, "Blocks", "contains", "PDN")
+
+    # If there are more than 7 characters in Blocks, that means that there is more than just 1 block. 
+    noPDNdf = df2[~df2["Blocks"].str.contains("PDN", na=False)]
+    noPDNdf.dropna(how="all", inplace=True)
+    print("noPDNdf", noPDNdf)
+    exportTable(noPDNdf, "/home/royal/Desktop/noPDNdf.csv")
+
+    yesPDNdf = df2[df2["Blocks"].str.contains("PDN", na=False)]
+    print("yesPDNdf", yesPDNdf)
+    exportTable(yesPDNdf, "/home/royal/Desktop/yesPDNdf.csv")
     
-    # About to check all trials for Names on certain Date, then add the name of horses to the df
-    # if there aren't any other blocks for that horse.
-    
-    #outputDf = pd.DataFrame(columns=df1.columns)
-    #outputDf = allPDNdf.copy()
-    #print("allPDNdf", allPDNdf)
-    # exportTable(allPDNdf, "/home/royal/Desktop/ALLpdn_SAA_JNS.csv")
-    # remove horses from output that appear in the dfPDN1['Blocks'].str.len() > 7
-    # filter out dfPDN1 
+    mask = (morethanPDNdf['Blocks'].str.len() > 7)
+    morethanPDNdf = morethanPDNdf.loc[mask]
+    morethanPDNdf = morethanPDNdf.loc[:, ['Horse', 'When', 'Blocks']]
 
-    # function: give back results from original df1 where the horse names and dates are the same 
-    # && where that horse had no other blocks on that day.
-    
-    # function: check the pdn1 
-    for _, row in dfPDN1.iterrows():
-        filter1 = allPDNdf["Horse"] != row.Horse
-        filter2 = allPDNdf["When"] != row.When
-        allPDNdf.where(filter1 & filter2, inplace=True)
-        #print("filter1", filter1)
-        #print("filter2", filter2)
-    outputDf = allPDNdf.copy()
-    outputDf.dropna(how="all", inplace=True)
-    return outputDf   
+    # when there are no blocks
+    noblocksdf = nullBlocks(noblocksdf)
+    print("noblocksdf", noblocksdf)
+    exportTable(noblocksdf, "/home/royal/Desktop/noblocksdf.csv")
+
+# #         contain_values = df[df[column].str.contains(value, na=False, regex=False)]
+#         # print(contain_values)
+#         df.dropna(how="all", inplace=True)
+
+    # 
+
+
+
+
+
+
+
+
+
+
+
+
+    outputDf = morethanPDNdf.copy()
+    print("anyPDNdf ", anyPDNdf)
+    exportTable(anyPDNdf, "/home/royal/Desktop/anyPDNdf.csv")
+    print("morethanPDNdf", outputDf)
+    exportTable(morethanPDNdf, "/home/royal/Desktop/morethanPDNdf.csv")
+
+    #
+
+
+    return outputDf 
 
 def goQuery1(df1):
     
@@ -400,6 +418,25 @@ def nullBlocks(inputDf):
 
     # 2. no blocks
     inputDf = inputDf[inputDf['Blocks'].isnull()]
+    
+    #print("inputDf is a ", type(inputDf))   
+    #print("after where\n\n", inputDf)
+    inputDf.dropna(how="all", inplace=True)
+    #print("\n\nDropna in NullBlocks (finished filtering)\n\n", inputDf)
+    
+    #print("inputDf is a ", type(inputDf))
+  
+    return inputDf
+
+def nonnullBlocks(inputDf):
+    
+    #print("\n\nNullBlocks activated on: \n\ninputDf", inputDf)
+
+    #print("inputDf is a ", type(inputDf))
+    # pandas filtering. 
+
+    # 2. no blocks
+    inputDf = inputDf[~inputDf['Blocks'].isnull()]
     
     #print("inputDf is a ", type(inputDf))   
     #print("after where\n\n", inputDf)
