@@ -237,7 +237,7 @@ function MainPage() {
                             <option value="">Please select a query</option>
                             <option value="Ipsilateral Impact">Ipsilateral Impact</option>
                             <option value="Ipsilateral Pushoff">Ipsilateral Pushoff</option>
-                            <option value="Ipsilateral Mostly Impact">Ipsilateral Mostly Impact</option>
+                            {/* <option value="Ipsilateral Mostly Impact">Ipsilateral Mostly Impact</option> */}
                             <option value="Just Impact">Just Impact</option>
                             <option value="Just Pushoff">Just Pushoff</option>
                             <option value="pdn">PDN Query</option>
@@ -271,7 +271,7 @@ function MainPage() {
                         }}>Start Over</div>
                         <br />
                         <br />
-                        {query === "pdn" ? (<div>You chose PDN query</div>) : (<div>
+                        {query === "pdn" || query === "Only PDN" ? (<div>You chose {query} query</div>) : (<div>
                             <ConditionList 
                             conditions={conditions}
                             parametorChange={parametorChange}
