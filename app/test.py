@@ -1,13 +1,40 @@
 # -*- coding: utf-8 -*-
 import horseFiltering as fdb
 import pandas as pd
+import csv
 
-#mtable.nonCLI("/home/royal/Desktop/inputabsol.csv", "/home/royal/Desktop/outputheadless.csv")
+def main():
+    #mtable.nonCLI("/home/royal/Desktop/inputabsol.csv", "/home/royal/Desktop/outputheadless.csv")
 
 
-# df1 = fdb.createTable("/home/royal/Documents/IndependentProjects/Horse/Spreadsheet SAA tablet 060121.csv")
-# df1 = fdb.appendCSV(df1, "/home/royal/Documents/IndependentProjects/Horse/Spreadsheet JNS tablet 100121.csv")
-# fdb.exportTable(df1, "/home/royal/Desktop/inputpdn_SAA_JNS.csv")
+    # df1 = fdb.createTable("/home/royal/Documents/IndependentProjects/Horse/Spreadsheet SAA tablet 060121.csv")
+    # df1 = fdb.appendCSV(df1, "/home/royal/Documents/IndependentProjects/Horse/Spreadsheet JNS tablet 100121.csv")
+    # fdb.exportTable(df1, "/home/royal/Desktop/inputpdn_SAA_JNS.csv")
+
+    # df1 = fdb.createTable("/home/royal/Desktop/inputpdn_SAA_JNS.csv")
+    fixSAAJNS()
+    return
+
+def fixSAAJNS():
+    with open("/home/royal/Documents/IndependentProjects/Horse/Spreadsheet SAA tablet 060121.csv", 'rt') as f:
+        data = f.read()
+
+    #data = data.replace('default""', 'default')
+    # data = data.replace('"', '')
+    # data = data.replace(',""', ',"')
+    # data = data.replace('"",', '",')
+
+    print("read file")
+
+    with open("/home/royal/Desktop/SAAnoquote.csv", mode='w') as f:
+        f_writer = csv.writer(f, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
+        for row in csv.reader(data.splitlines(), delimiter=',', skipinitialspace=True):
+            print(row)
+            f_writer.writerow(row)
+    print("wrote file")
+    return
+
+
 #df2 = df1.copy()
 #df2 = fdb.goPDNQuery(df2)
 #fdb.exportTable(df2, "/home/royal/Desktop/MORETHAN1pdn_SAA_JNS.csv")
@@ -35,12 +62,12 @@ df1 = fdb.filterTable(df1, "Hind Diff Min Mean", ">", "3", absvalue=True)
 # 6. sign of diffminpelvis same as sign of diffminhead
 df1 = fdb.filterTable(df1, "Hind Diff Min Mean", "Same Signs", "Fore Diff Min Mean")
 """
-#df1 = fdb.queryOnlyPDN(df1)
+# df1 = fdb.queryOnlyPDN(df1)
 
-#fdb.exportTable(df1, "/home/royal/Desktop/outputONLYpdn_SAA_JNS.csv")
+# fdb.exportTable(df1, "/home/royal/Desktop/outputONLYpdn_SAA_JNS.csv")
 
-fdb.nonCLI("/home/royal/Desktop/output/LLocator-Results-2021-01-11.csv", "/home/royal/Desktop/output/query1output.csv", "query1")
-fdb.nonCLI("/home/royal/Desktop/output/LLocator-Results-2021-01-11.csv", "/home/royal/Desktop/query2output.csv", "query2")
+# fdb.nonCLI("/home/royal/Desktop/output/LLocator-Results-2021-01-11.csv", "/home/royal/Desktop/output/query1output.csv", "query1")
+# fdb.nonCLI("/home/royal/Desktop/output/LLocator-Results-2021-01-11.csv", "/home/royal/Desktop/query2output.csv", "query2")
 
 """
 
@@ -74,3 +101,6 @@ If no filepath is given, working directory is assumed. This would be useful for 
 
 """
 #/home/royal/Desktop/inputabsol.csv
+
+if __name__ == "__main__":
+    main()
