@@ -9,13 +9,34 @@ def main():
 
     # df1 = fdb.createTable("/home/royal/Documents/IndependentProjects/Horse/Spreadsheet SAA tablet 060121.csv")
     # df1 = fdb.appendCSV(df1, "/home/royal/Documents/IndependentProjects/Horse/Spreadsheet JNS tablet 100121.csv")
+    df1 = fdb.createTable("/home/royal/Desktop/LLocator-Results-2021-01-11.csv")
     # fdb.exportTable(df1, "/home/royal/Desktop/inputpdn_SAA_JNS.csv")
 
     # df1 = fdb.createTable("/home/royal/Desktop/inputpdn_SAA_JNS.csv")
-    fixSAAJNS()
+    # fixSAAJNSpycsv()
+    # fixSAAJNSpandas()
+
+    #df2 = df1.copy()
+    #df2 = fdb.goPDNQuery(df2)
+    #fdb.exportTable(df2, "/home/royal/Desktop/MORETHAN1pdn_SAA_JNS.csv")
+
+    df1 = fdb.queryOnlyPDN(df1)
+
+    fdb.exportTable(df1, "/home/royal/Desktop/outputONLYpdn_SAA_JNS.csv")
     return
 
-def fixSAAJNS():
+def fixSAAJNSpandas():
+    # I'm going to try a similar method with Pandas. When I try it with Pandas, I will 
+    # make it check per row if the name field starts with a quote (it shouldn't) 
+    # and if the final field ends with a quote (it should just be default, not default")
+
+    df1 = fdb.createTable("/home/royal/Documents/IndependentProjects/Horse/Spreadsheet SAA tablet 060121.csv")
+    for _, row in df1.iterrows():
+        if (pd.isna(row.Horse)):
+            print(row)
+    return
+
+def fixSAAJNSpycsv():
     with open("/home/royal/Documents/IndependentProjects/Horse/Spreadsheet SAA tablet 060121.csv", 'rt') as f:
         data = f.read()
 
@@ -29,15 +50,26 @@ def fixSAAJNS():
     with open("/home/royal/Desktop/SAAnoquote.csv", mode='w') as f:
         f_writer = csv.writer(f, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
         for row in csv.reader(data.splitlines(), delimiter=',', skipinitialspace=True):
-            print(row)
+            # try:
+            #     if row[1] is not None:
+            #         print(row[1], type(row[1]))
+            #         # f_writer.writerow(row)
+            # except:
+            #     print(row[0], type(row[0]))
+            try:
+                if row[1] is not None:
+                    # pass
+                    print(type(row))
+                    # f_writer.writerow(row)
+            except:
+                print(row[0], type(row[0]))
+                print(type(row))
             f_writer.writerow(row)
     print("wrote file")
     return
 
 
-#df2 = df1.copy()
-#df2 = fdb.goPDNQuery(df2)
-#fdb.exportTable(df2, "/home/royal/Desktop/MORETHAN1pdn_SAA_JNS.csv")
+
 
 # query 2
 # 1. straight line trials
