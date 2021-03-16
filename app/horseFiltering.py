@@ -141,13 +141,14 @@ def queryOnlyPDN(inputDf):
     anyPDNdf = filterTable(df1, "Blocks", "contains", "PDN")
 
     # If there are more than 7 characters in Blocks, that means that there is more than just 1 block. 
-    noPDNdf = df2[~df2["Blocks"].str.contains("PDN", na=False)]
-    noPDNdf.dropna(how="all", inplace=True)
-    print("noPDNdf", noPDNdf)
-    exportTable(noPDNdf, "/home/royal/Desktop/noPDNdf.csv")
+    blocksNoPDNdf = df2[~df2["Blocks"].str.contains("PDN", na=False)]
+    # blocksNoPDNdf.dropna(how="all", inplace=True)
+    blocksNoPDNdf = nonnullBlocks(blocksNoPDNdf)
+    # print("blocksNoPDNdf", blocksNoPDNdf)
+    exportTable(blocksNoPDNdf, "/home/royal/Desktop/blocksNoPDNdf.csv")
 
     yesPDNdf = df2[df2["Blocks"].str.contains("PDN", na=False)]
-    print("yesPDNdf", yesPDNdf)
+    # print("yesPDNdf", yesPDNdf)
     exportTable(yesPDNdf, "/home/royal/Desktop/yesPDNdf.csv")
     
     mask = (morethanPDNdf['Blocks'].str.len() > 7)
@@ -164,25 +165,26 @@ def queryOnlyPDN(inputDf):
 #         df.dropna(how="all", inplace=True)
 
     # 
+    outputDf = yesPDNdf.copy()
+    outputDf = outputDf.append(noblocksdf) 
+    tempDf = outputDf.copy()
+    tempDf['When'] = tempDf['When'].str[:9]
+    morethanPDNdf['When'] = morethanPDNdf['When'].str[:9]
+    blocksNoPDNdf['When'] = blocksNoPDNdf['When'].str[:9]
 
+    for _, row in morethanPDNdf.iterrows():
+        horseFilter = tempDf["Horse"] != row.Horse
+        whenFilter = tempDf["Horse"] != row.When
+        tempDf.where(horseFilter & whenFilter, inplace = True)
 
+    # for _, row in blocksNoPDNdf.iterrows():
+    #     horseFilter = tempDf["Horse"] != row.Horse
+    #     whenFilter = tempDf["Horse"] != row.When
+    #     tempDf.where(horseFilter & whenFilter, inplace = True)
 
+    exportTable(tempDf, "/home/royal/Desktop/outputDf.csv")
 
-
-
-
-
-
-
-
-
-    outputDf = morethanPDNdf.copy()
-    print("anyPDNdf ", anyPDNdf)
-    exportTable(anyPDNdf, "/home/royal/Desktop/anyPDNdf.csv")
-    print("morethanPDNdf", outputDf)
-    exportTable(morethanPDNdf, "/home/royal/Desktop/morethanPDNdf.csv")
-
-    #
+    
 
 
     return outputDf 
