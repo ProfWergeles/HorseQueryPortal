@@ -238,9 +238,11 @@ function MainPage() {
                             <option value="">Please select a query</option>
                             <option value="Ipsilateral Impact">Ipsilateral Impact</option>
                             <option value="Ipsilateral Pushoff">Ipsilateral Pushoff</option>
-                            {/* <option value="Ipsilateral Mostly Impact">Ipsilateral Mostly Impact</option> */}
+                            <option value="Ipsilateral Mostly Impact">Ipsilateral Mostly Impact</option>
                             <option value="Just Impact">Just Impact</option>
                             <option value="Just Pushoff">Just Pushoff</option>
+                            <option value="Mostly Impact">Mostly Impact</option>
+                            <option value="Mostly Pushoff">Mostly Pushoff</option>
                             <option value="pdn">PDN Query</option>
                             <option value="Only PDN">Only PDN</option>
                         </select>

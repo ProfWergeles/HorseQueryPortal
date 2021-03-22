@@ -494,7 +494,7 @@ def filterTable(df, column, operator, value, absvalue="None"):
                 df.where(tableFilter, inplace=True)
 
             if (valueType == "number"):
-                print("both number")
+                print("left number")
                 tableFilter = operate(abs(df[column]), value)
                 df.where(tableFilter, inplace=True)
 
