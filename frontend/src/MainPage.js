@@ -41,6 +41,7 @@ function MainPage() {
         if (query === "pdn" || query === "Only PDN") {
             formData.append("query", query);
         } else {
+            formData.append("columns", columns)
             conditions.forEach(condition => {
                 if (condition.value === "") {
                     validForm = false;

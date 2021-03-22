@@ -68,22 +68,22 @@ def upload_file():
                     print(query)
                     fdb.nonCLI(app.config["FILE_UPLOADS"] + filename, app.config["FILE_UPLOADS"] + parsedFilename, query)
                 else:
+                    fdb.Columns = request.form.get("columns").split(",")
+
                     parameters = []
                     for _, val in request.form.items():
                         parameters.append(val)
 
                     print(file)
-                    print(parameters)
-
 
                     # run the parse function to generate the new file stored in uploads/ 
-                    # loop through parameters with i+3 to call nonCLI
+                    # loop through parameters with i+4 to call nonCLI
 
                     df1 = fdb.createTable(app.config["FILE_UPLOADS"] + filename)
 
                     print(len(parameters))
 
-                    j = 0
+                    j = 1
                     while j < len(parameters):
                         field = parameters[j]
                         operator = parameters[j+1]

@@ -31,6 +31,7 @@ function Condition(props) {
                 <option value=">=">{'>='}</option>
                 <option value="<=">{'<='}</option>
                 <option value="==">{'=='}</option>
+                <option value="!=">{'!='}</option>
                 <option value="Same Signs">{'Same Signs'}</option>
             </select>
             <input type="text" 
@@ -43,6 +44,8 @@ function Condition(props) {
             >
                 <option value="None">{'No Absolute Value'}</option>
                 <option value="Right">{'Absolute Value On Right Side'}</option>
+                <option value="Left">{'Absolute Value On Left Side'}</option>
+                <option value="Both">{'Absolute Value On Both Sides'}</option>
             </select>
             <br />
             <br />

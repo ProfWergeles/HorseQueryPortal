@@ -13,8 +13,10 @@ Created on Tue Nov  3 14:24:17 2020
 import pandas as pd
 import argparse
 import numpy as np
+import operator as op
 #from multipledispatch import dispatch
 
+Columns = []
 
 #df = pd.DataFrame
 
@@ -434,68 +436,131 @@ def filterTable(df, column, operator, value, absvalue="None"):
         df.dropna(how="all", inplace=True)
         return df
     else:
-        # print("Is str 1", isinstance(value, str))
-        if(is_number(value) & isinstance(value, str)):
+        # parse operator
+        operate = op.eq
+        if (operator == "=="):
+            operate = op.eq
+        elif (operator == ">"):
+            operate = op.gt
+        elif (operator == "<"):
+            operate = op.lt
+        elif (operator == ">="):
+            operate = op.ge
+        elif (operator == "<="):
+            operate = op.le
+        elif (operator == "!="):
+            operate = op.ne
+        
+
+        # a function to determine if value is a string, number, or column
+        valueType = "string"
+        if (is_number(value) & isinstance(value, str)):
             value = float(value)
+            valueType = "number"
+        if (value in Columns):
+            valueType = "column"
+
+        print(valueType)
+        print(value)
+
+        if (absvalue == "Both"):
+            print("abs both")
+            if (valueType == "column"):
+                print("both column")
+                tableFilter = operate(abs(df[column]), abs(df[value]))
+                df.where(tableFilter, inplace=True)
+
+            if (valueType == "number"):
+                print("both number")
+                tableFilter = operate(abs(df[column]), abs(value))
+                df.where(tableFilter, inplace=True)
+
+
+        # print("Is str 1", isinstance(value, str))
+        # if(is_number(value) & isinstance(value, str)):
+        #     value = float(value)
             # print("\/Is str 2", isinstance(value, str))
         #if (left and right abs are true)
         ##pandas dataframe function perhaps:
             # can we get the aboslute value of the column in order to make the filter?
             # df1[column].abs()?  
         
-        if (absvalue == "Right"):   
+        # left abs, not changed from orginal right side yet
+        elif (absvalue == "Left"):   
+            print("abs left")
+            if (valueType == "column"):
+                print("left column")
+                tableFilter = operate(abs(df[column]), df[value])
+                df.where(tableFilter, inplace=True)
+
+            if (valueType == "number"):
+                print("both number")
+                tableFilter = operate(abs(df[column]), value)
+                df.where(tableFilter, inplace=True)
+
+        elif (absvalue == "Right"):
+            print("abs right")
             # TODO: make sure the value is positive otherwise the math is wrong
             # TODO: allow for two strings comparison 
             # 9. |diffMIN pelvis| > |diffMAX pelvis|
             # df1 = filterTable(df1, "Hind Diff Min Mean", ">", "Hind Diff Max Mean", absvalue=True)
-            if (operator == "=="):
-                tableFilter = df[column] == value
-                tableFilter2 = df[column] == -1*value
-                df.where(tableFilter | tableFilter2, inplace=True)
-            elif (operator == ">"):
-                tableFilter = df[column] > value
-                tableFilter2 = df[column] < -1*value
-                df.where(tableFilter | tableFilter2, inplace=True)
-            elif (operator == "<"):
-                tableFilter = df[column] < value
-                tableFilter2 = df[column] > -1*value
-                df.where(tableFilter & tableFilter2, inplace=True)
-            elif (operator == ">="):
-                tableFilter = df[column] >= value
-                tableFilter2 = df[column] <= -1*value
-                df.where(tableFilter | tableFilter2, inplace=True)
-            elif (operator == "<="):
-                tableFilter = df[column] <= value
-                tableFilter2 = df[column] >= -1*value
-                df.where(tableFilter & tableFilter2, inplace=True)
-            elif (operator == "!="):
-                tableFilter = df[column] != value
-                tableFilter = df[column] != -1*value
-                df.where(tableFilter & tableFilter2, inplace=True)
-            else:
-                errorstring = "\n\nINPUT::\nOperator not valid and will cause tableFilter reference before assignment"
-                raise ValueError(errorstring)   
-                
+
+            if (valueType == "column"):
+                print("right column")
+                tableFilter = operate(df[column], abs(df[value]))
+                df.where(tableFilter, inplace=True)
+
+            if (valueType == "number"):
+                print("right number")
+                tableFilter = operate(df[column], abs(value))
+                df.where(tableFilter, inplace=True)
+
+            # if (valueType == "number"):
+            #     print("abs number")
+            #     if (operator == "=="):
+            #         tableFilter = df[column] == value
+            #         tableFilter2 = df[column] == -1*value
+            #         df.where(tableFilter | tableFilter2, inplace=True)
+            #     elif (operator == ">"):
+            #         tableFilter = df[column] > value
+            #         # tableFilter2 = df[column] < -1*value
+            #         # df.where(tableFilter | tableFilter2, inplace=True)
+            #         tableFilter2 = df[column] > -1*value
+            #         df.where(tableFilter & tableFilter2, inplace=True)
+            #     elif (operator == "<"):
+            #         tableFilter = df[column] < value
+            #         # tableFilter2 = df[column] > -1*value
+            #         # df.where(tableFilter & tableFilter2, inplace=True)
+            #         tableFilter2 = df[column] < -1*value
+            #         df.where(tableFilter | tableFilter2, inplace=True)
+            #     elif (operator == ">="):
+            #         tableFilter = df[column] >= value
+            #         tableFilter2 = df[column] >= -1*value
+            #         df.where(tableFilter & tableFilter2, inplace=True)
+            #     elif (operator == "<="):
+            #         tableFilter = df[column] <= value
+            #         tableFilter2 = df[column] <= -1*value
+            #         df.where(tableFilter | tableFilter2, inplace=True)
+            #     elif (operator == "!="):
+            #         tableFilter = df[column] != value
+            #         tableFilter = df[column] != -1*value
+            #         df.where(tableFilter & tableFilter2, inplace=True)
+            #     else:
+            #         errorstring = "\n\nINPUT::\nOperator not valid and will cause tableFilter reference before assignment"
+            #         raise ValueError(errorstring)   
+
         else:    #abs is none
-            if (operator == "=="):
-                tableFilter = df[column] == value
-            elif (operator == ">"):
-                tableFilter = df[column] > value
-            elif (operator == "<"):
-                tableFilter = df[column] < value
-            elif (operator == ">="):
-                tableFilter = df[column] >= value
-            elif (operator == "<="):
-                tableFilter = df[column] <= value
-            elif (operator == "!="):
-                tableFilter = df[column] != value
+            print("abs none")
+            if (valueType == "column"):
+                print("none column")
+                tableFilter = operate(df[column], df[value])
+                df.where(tableFilter, inplace=True)
             else:
-                errorstring = "\n\nINPUT::\nOperator not valid and will cause tableFilter reference before assignment"
-                raise ValueError(errorstring)      
-            df.where(tableFilter, inplace=True)
-            
+                print("none string or number")
+                tableFilter = operate(df[column], value)
+                df.where(tableFilter, inplace=True)
+
     df.dropna(how="all", inplace=True)
-    
     return df
 
 
