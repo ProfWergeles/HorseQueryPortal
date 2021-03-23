@@ -20,7 +20,9 @@ def main():
     #df2 = fdb.goPDNQuery(df2)
     #fdb.exportTable(df2, "/home/royal/Desktop/MORETHAN1pdn_SAA_JNS.csv")
 
+    # df1 = fdb.queryOnlyPDN(df1)
     df1 = fdb.queryOnlyPDN(df1)
+
 
     fdb.exportTable(df1, "/home/royal/Desktop/outputONLYpdn_SAA_JNS.csv")
     return

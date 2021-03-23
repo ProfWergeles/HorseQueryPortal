@@ -131,11 +131,12 @@ def queryOnlyPDN(inputDf):
     #inputDf = filterTable(inputDf, "Trial", "==", "Straight Line")
     #inputDf = filterTable(inputDf, "Fore Strides", ">", "19")
     #TODO ^ move this to later in the function 
-
+    df0 = inputDf.copy()
     df1 = inputDf.copy()
     df2 = inputDf.copy()
     noblocksdf = inputDf.copy()
     morethanPDNdf = inputDf.copy()
+    
 
     # anyPDNdf from df1, which is any trial that contains PDN.
     anyPDNdf = filterTable(df1, "Blocks", "contains", "PDN")
@@ -151,9 +152,10 @@ def queryOnlyPDN(inputDf):
     # print("yesPDNdf", yesPDNdf)
     exportTable(yesPDNdf, "/home/royal/Desktop/yesPDNdf.csv")
     
-    mask = (morethanPDNdf['Blocks'].str.len() > 7)
+    mask = ~(morethanPDNdf['Blocks'].str.len() > 7)
     morethanPDNdf = morethanPDNdf.loc[mask]
     morethanPDNdf = morethanPDNdf.loc[:, ['Horse', 'When', 'Blocks']]
+    exportTable(morethanPDNdf, "/home/royal/Desktop/morethanPDNdf.csv")
 
     # when there are no blocks
     noblocksdf = nullBlocks(noblocksdf)
@@ -167,22 +169,50 @@ def queryOnlyPDN(inputDf):
     # 
     outputDf = yesPDNdf.copy()
     outputDf = outputDf.append(noblocksdf) 
-    tempDf = outputDf.copy()
-    tempDf['When'] = tempDf['When'].str[:9]
+
+    # print("tempDf", tempDf)
+    # tempDf['When'] = tempDf['When'].str[:9]
     morethanPDNdf['When'] = morethanPDNdf['When'].str[:9]
     blocksNoPDNdf['When'] = blocksNoPDNdf['When'].str[:9]
+    df0['When'] = df0['When'].str[:9]
 
-    for _, row in morethanPDNdf.iterrows():
-        horseFilter = tempDf["Horse"] != row.Horse
-        whenFilter = tempDf["Horse"] != row.When
-        tempDf.where(horseFilter & whenFilter, inplace = True)
+    removal = 0
+    tempDf = pd.DataFrame(columns=df1.columns)
+    print("tempDf", tempDf)
+    print("starting loop 1")
+    for _, row in inputDf.iterrows():
+        # print(type(row.Blocks))
 
-    # for _, row in blocksNoPDNdf.iterrows():
-    #     horseFilter = tempDf["Horse"] != row.Horse
-    #     whenFilter = tempDf["Horse"] != row.When
-    #     tempDf.where(horseFilter & whenFilter, inplace = True)
+        if (type(row.Blocks) == str):
+            # remove horses on days that had more than 1 block
+            if (len(row.Blocks) > 7):
+                # print(">7\t", row.Blocks)
+                horseFilter = df0["Horse"] != row.Horse
+                whenFilter = df0["When"] != row.When
+                df0.where(horseFilter & whenFilter, inplace = True)
+                removal += 1
 
-    exportTable(tempDf, "/home/royal/Desktop/outputDf.csv")
+            # if exactly 7, then it could be 1 PDN, or other
+            if (len(row.Blocks) == 7):
+                print("\t== 7\t", row.Blocks)
+                # if that 1 block is not a PDN block, then remove from potentials
+                if (row.Blocks.count("PDN") == 0):
+
+                    horseFilter = df0["Horse"] != row.Horse
+                    whenFilter = df0["When"] != row.When
+                    df0.where(horseFilter & whenFilter, inplace = True)
+                    removal += 1
+                # else, they're 
+    # for the remaining trials, if they had a block then it must be a PDN block.
+    # so, we'll go trough the new df1.  
+    exportTable(df0, "/home/royal/Desktop/df0.csv")
+    ourPDNdf = filterTable(df0, "Blocks", "contains", "PDN")
+    exportTable(ourPDNdf, "/home/royal/Desktop/ourPDNdf.csv")
+    print(removal, "removals")
+        # horseFilter = tempDf["Horse"] != row.Horse
+        # whenFilter = tempDf["When"] != row.When
+        # tempDf.where(horseFilter & whenFilter, inplace = True)
+
 
     
 
