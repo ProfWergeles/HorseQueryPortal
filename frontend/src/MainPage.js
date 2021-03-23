@@ -239,6 +239,7 @@ function MainPage() {
                             <option value="Ipsilateral Impact">Ipsilateral Impact</option>
                             <option value="Ipsilateral Pushoff">Ipsilateral Pushoff</option>
                             <option value="Ipsilateral Mostly Impact">Ipsilateral Mostly Impact</option>
+                            <option value="Ipsilateral Mostly Pushoff">Ipsilateral Mostly Pushoff</option>
                             <option value="Just Impact">Just Impact</option>
                             <option value="Just Pushoff">Just Pushoff</option>
                             <option value="Mostly Impact">Mostly Impact</option>
