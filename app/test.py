@@ -24,7 +24,7 @@ def main():
     df1 = fdb.queryOnlyPDN(df1)
 
 
-    fdb.exportTable(df1, "/home/royal/Desktop/outputONLYpdn_SAA_JNS.csv")
+    fdb.exportTable(df1, "/home/royal/Desktop/outputONLYpdn.csv")
     return
 
 def fixSAAJNSpandas():
