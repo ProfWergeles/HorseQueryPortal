@@ -1,5 +1,7 @@
 import React from 'react'
 
+import AutoCompleteTextField from './components/AutoCompleteTextField'
+
 function Condition(props) {
     return (
         <div className="conditions">
@@ -34,10 +36,19 @@ function Condition(props) {
                 <option value="!=">{'!='}</option>
                 <option value="Same Signs">{'Same Signs'}</option>
             </select>
-            <input type="text" 
+            {/* <input type="text" 
                 value={props.condition.value} 
                 onChange={e => props.valueChange(e, props.condition.id)}
+            /> */}
+
+            <AutoCompleteTextField 
+                columns={props.columns}
+                valueChange={props.valueChange}
+                conditionId={props.condition.id}
+                value={props.condition.value}
             />
+
+
             <select 
                 value={props.condition.abs} 
                 onChange={e => props.absChange(e, props.condition.id)}

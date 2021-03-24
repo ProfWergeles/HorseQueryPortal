@@ -60,18 +60,18 @@ function MainPage() {
             console.log(conditions);
         }
 
-        axios.post('/api/upload-file', formData)
-        .then(res => {
-            if (res.data.success === true) {
-                console.log(res.data.file);
-                history.push({
-                    pathname: '/download',
-                    state: res.data.file,
-                })
-            } else {
-                // need to deal with the error in frontend and backend
-            }
-        });
+        // axios.post('/api/upload-file', formData)
+        // .then(res => {
+        //     if (res.data.success === true) {
+        //         console.log(res.data.file);
+        //         history.push({
+        //             pathname: '/download',
+        //             state: res.data.file,
+        //         })
+        //     } else {
+        //         // need to deal with the error in frontend and backend
+        //     }
+        // });
     }
 
     const parametorChange = (e, id) => {
@@ -110,12 +110,24 @@ function MainPage() {
         setConditions(c);
     }
 
-    const valueChange = (e, id) => {
+    // const valueChange = (e, id) => {
+    //     let c = [...conditions];
+
+    //     for (var i in c) {
+    //         if (c[i].id === id) {
+    //             c[i].value = e.target.value;
+    //         }
+    //     }
+
+    //     setConditions(c);
+    // }
+
+    const valueChange = (newValue, id) => {
         let c = [...conditions];
 
         for (var i in c) {
             if (c[i].id === id) {
-                c[i].value = e.target.value;
+                c[i].value = newValue;
             }
         }
 

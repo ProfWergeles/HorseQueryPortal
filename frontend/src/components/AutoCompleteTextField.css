@@ -1,0 +1,38 @@
+.AutoCompleteTextField {
+  display: inline-block;
+  border: 1px solid black;
+}
+
+.AutoCompleteTextField input {
+  position: relative;
+  border: none;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 14px;
+  color: rgba(0, 0, 0, 0.73);
+  outline: none;
+}
+
+.AutoCompleteTextField ul {
+  position: absolute;
+  background-color: beige;
+  list-style-type: none;
+  text-align: left;
+  margin: 0;
+  padding: 0;
+  border: 1px solid grey;
+}
+
+.AutoCompleteTextField ul::before {
+  content: "";
+}
+
+.AutoCompleteTextField li {
+  padding: 5px 5px;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.AutoCompleteTextField li:hover {
+  text-decoration: underline;
+  background-color: rgba(128, 128, 128, 0.28);
+}
