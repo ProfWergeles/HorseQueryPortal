@@ -128,8 +128,8 @@ def goPDNQuery(inputDf):
 def queryOnlyPDN(inputDf):
     print("\n\nPDN ONLY query \n\n")
 
-    #inputDf = filterTable(inputDf, "Trial", "==", "Straight Line")
-    #inputDf = filterTable(inputDf, "Fore Strides", ">", "19")
+    inputDf = filterTable(inputDf, "Trial", "==", "Straight Line")
+    inputDf = filterTable(inputDf, "Fore Strides", ">", "19")
     #TODO ^ move this to later in the function 
 
     # 1.0 FILTER PHASE
@@ -172,8 +172,7 @@ def queryOnlyPDN(inputDf):
         outputDf = outputDf.append(tempDf)
         # print(outputDf)
 
-    outputDf.drop_duplicates()
-    return outputDf
+    return outputDf.drop_duplicates()
 
 def goQuery1(df1):
     
