@@ -13,6 +13,11 @@
 }
 
 .AutoCompleteTextField ul {
+  display: none;
+}
+
+.AutoCompleteTextField input:focus + ul {
+  display: block;
   position: absolute;
   background-color: beige;
   list-style-type: none;

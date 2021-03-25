@@ -5,13 +5,13 @@ import './AutoCompleteTextField.css';
 
 function AutoCompleteTextField(props) {
   // *********************** disallow non letter char or allow but match it
-  const [suggestions, setSuggestions] = useState([]);
+  const [suggestions, setSuggestions] = useState(props.columns);
 
     const onTextChange = (e, id) => {
         const value = e.target.value;
         // escapeRegExp(value);
 
-        let s = []
+        let s = props.columns
         if (value.length > 0) {
             const regex = new RegExp(`^${value}`, 'i');
             s = props.columns.sort().filter(v => regex.test(v));
