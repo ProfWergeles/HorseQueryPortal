@@ -4,12 +4,13 @@ import uuid from 'react-uuid'
 import './AutoCompleteTextField.css';
 
 function AutoCompleteTextField(props) {
-  // *********************** disallow non letter char or allow but match it
   const [suggestions, setSuggestions] = useState(props.columns);
 
     const onTextChange = (e, id) => {
-        const value = e.target.value;
-        // escapeRegExp(value);
+        let value = e.target.value;
+
+        // sanitize out special character (only allow: dot(.), letters and numbers (\w), and space(\s))
+        value = value.replace(/[^.\w\s]/gi, '');
 
         let s = props.columns
         if (value.length > 0) {
@@ -31,13 +32,9 @@ function AutoCompleteTextField(props) {
         }
         return (
             <ul>
-                {suggestions.map(column => (<li key={uuid()} onClick={() => suggestSelected(column, id)}>{column}</li>))}
+                {suggestions.map(column => (<li key={uuid()} onMouseDown={() => suggestSelected(column, id)}>{column}</li>))}
             </ul>
         )
-    }
-
-    const escapeRegExp = (string) => {
-      return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // $& means the whole matched string
     }
 
   return (
