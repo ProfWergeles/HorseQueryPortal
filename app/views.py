@@ -75,6 +75,7 @@ def upload_file():
                         parameters.append(val)
 
                     print(file)
+                    print(parameters)
 
                     # run the parse function to generate the new file stored in uploads/ 
                     # loop through parameters with i+4 to call nonCLI
