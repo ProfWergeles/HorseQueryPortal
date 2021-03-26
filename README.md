@@ -94,7 +94,7 @@ location /api/ {
 *DONE!!*
 
 
-# How to update live websute
+# How to update the live website
 
 1. Push the most-updated code to github
 2. ssh to the server and cd to the project repo
