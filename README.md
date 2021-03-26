@@ -84,11 +84,26 @@ location /api/ {
 
 1. `sudo apt install tmux` to install tmux to have the backend running after closing terminal
 2. `tmux new -s <app name of your choice>` to create a new tmux session
-3. cd into the project folder and `python3 run.py` or `python run.py` to run the backend
+3. cd into the project folder and do `python3 run.py` or `python run.py` to run the backend
 4. By now everything should be running successfully
 
 * `tmux ls` to check current running session
 * `tmux kill-session -t <session-name>` to kill the current running session
 *Everytime you update backend code, you should re run the backend service*
+
+*DONE!!*
+
+
+# How to update live websute
+
+1. Push the most-updated code to github
+2. ssh to the server and cd to the project repo
+3. `git pull`
+4. `cd frontend`
+5. `npm run build`
+6. `tmux kill-session -t <the session name created previously>` (you can do `tmux ls` to see the current runnung session)
+7. `tmux new -s <create a session name of your choice>`
+8. In the project repo, do `python3 run.py` or `python run.py` to run the backend
+9. After above steps, you can close the terminal and the service will still be runnung on live server.
 
 *DONE!!*
