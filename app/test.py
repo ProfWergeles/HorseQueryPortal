@@ -20,11 +20,11 @@ def main():
     #df2 = fdb.goPDNQuery(df2)
     #fdb.exportTable(df2, "/home/royal/Desktop/MORETHAN1pdn_SAA_JNS.csv")
 
-    # df1 = fdb.queryOnlyPDN(df1)
+    # df1 = fdb.goPDNQuery(df1)
+    # fdb.exportTable(df1, input + "_PDN.csv")
+
     df1 = fdb.queryOnlyPDN(df1)
-
-
-    fdb.exportTable(df1, input + "_OnlyPDN.csv")
+    fdb.exportTable(df1, input + "_onlyPDN.csv")
     return
 
 def fixSAAJNSpandas():

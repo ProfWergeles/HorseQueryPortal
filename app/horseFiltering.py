@@ -89,9 +89,8 @@ def goPDNQuery(inputDf):
     print("\n\nPDN QUERY \n\n")
 
     df1 = inputDf.copy()
-    df1 = filterTable(df1, "Trial", "==", "Straight Line")
-    df1 = filterTable(df1, "Fore Strides", ">", "19")
-    #TODO ^ move this to later in the function 
+    # df1 = filterTable(df1, "Trial", "==", "Straight Line")
+    # df1 = filterTable(df1, "Fore Strides", ">", "19")
 
     dfPDN1 = filterTable(df1, "Blocks", "contains", "PDN")
     # standard in Blocks is "RH: PDN" for example. If there are more than 7 characters
@@ -123,56 +122,133 @@ def goPDNQuery(inputDf):
         #add row to output DF
         outputDf = outputDf.append(tempDf)
         #print(outputDf)
-    return outputDf
+
+    df0 = outputDf.copy()
+    df0 = filterTable(df0, "Trial", "==", "Straight Line")
+    df0 = filterTable(df0, "Fore Strides", ">", "19")
+    return df0
     
 def queryOnlyPDN(inputDf):
     print("\n\nPDN ONLY query \n\n")
 
-    inputDf = filterTable(inputDf, "Trial", "==", "Straight Line")
-    inputDf = filterTable(inputDf, "Fore Strides", ">", "19")
+    # inputDf = filterTable(inputDf, "Trial", "==", "Straight Line")
+    # inputDf = filterTable(inputDf, "Fore Strides", ">", "19")
     #TODO ^ move this to later in the function 
 
     # 1.0 FILTER PHASE
-    # 1.1 
-    containsPDNdf = inputDf.copy()
-    containsPDNdf = filterTable(containsPDNdf, "Blocks", "contains", "PDN")
+    # Originaly we checked for containing PDN over before if blocks strlen >7. 
+    # As a result, blocks that did not contain PDN but were over >7 did not get put into toolongDf,
+    # so we should remove any blocks that are too long before even making sure it contains PDN.
+
+    potentialDf = inputDf.copy()
+    potentialDf['When'] = potentialDf['When'].str[:9]
+    potentialDf = potentialDf.loc[:, ['Horse', 'When']]
+
+    # nottoolongDf.dropna(how="all", inplace=True)
+
+    # 1.1 For each row that is too long (more than 1 block), remove from potentials. (CHECK)
+    toolongDf = inputDf.copy()
+    toolongDf['When'] = toolongDf['When'].str[:9]
+
+    mask = (toolongDf['Blocks'].str.len() > 7)
+    toolongDf = toolongDf.loc[mask]
+    toolongDf = toolongDf.loc[:, ['Horse', 'When']]
+
+    # for _, row in toolongDf.iterrows():
+    #     print(row.Horse, row.When)
+    #     horseFilter = potentialDf["Horse"] != row.Horse
+    #     whenFilter =  potentialDf["When"] != row.When
+    #     potentialDf = potentialDf.where(horseFilter & whenFilter)
 
 
-    # containsPDNdf.dropna(how="all", inplace=True)
 
-    # 1.2 For each row that is too long (more than 1 block), remove from containsPDNdf.
-    toolongDf = containsPDNdf.copy()
-    for _, row in toolongDf.iterrows():
-        if (type(row.Blocks) == str):
-            if (len(row.Blocks) > 7):
-                horseFilter = containsPDNdf["Horse"] != row.Horse
-                whenFilter = containsPDNdf["When"] != row.When
-                containsPDNdf.where(horseFilter & whenFilter, inplace = True)
+    print(toolongDf)            
+    exportTable(toolongDf, "/home/royal/Desktop/toolongdf.csv")
 
-    containsPDNdf.dropna(how="all", inplace=True)
+    # potentialDf = pd.concat([potentialDf, toolongDf, toolongDf]).drop_duplicates(keep=False)
+    # https://stackoverflow.com/a/18184990
+    ds1 = set([tuple(line) for line in potentialDf.values])
+    ds2 = set([tuple(line) for line in toolongDf.values])
+    nottoolongDf = pd.DataFrame(list(ds1.difference(ds2)))
 
-    onlyPDNdf = containsPDNdf.copy()
+    print(nottoolongDf)
+    exportTable(nottoolongDf, "/home/royal/Desktop/nottoolongdf.csv")
+
+    # 1.2 Must only contain PDN queries. 
+    # Create a set of Horses, Dates that have at least a PDN query.
+    # containsPDNdf = 
+    potentialDf = inputDf.copy()
+    potentialDf['When'] = potentialDf['When'].str[:9]
+    potentialDf = potentialDf.loc[:, ['Horse', 'When', 'Blocks']]    
+    
+    containsPDNdf = potentialDf.copy()
+    containsPDNdf = filterTable(potentialDf, "Blocks", "contains", "PDN")
+    containsPDNdf = nonnullBlocks(containsPDNdf)
+    containsPDNdf['When'] = containsPDNdf['When'].str[:9]
+    print("containsPDNdf\n", containsPDNdf)
+
+    ds3 = set([tuple(line) for line in potentialDf.values])
+    ds4 = set([tuple(line) for line in containsPDNdf.values])
+    nonPDNdf = pd.DataFrame(list(ds3.difference(ds4)))
+    print("nonPDNdf\n", nonPDNdf)
+    # nonPDNdf = nonPDNdf[~nonPDNdf[2].isnull()]
+    nonPDNdf.dropna(how="all", inplace=True)
+    print("nonPDNdf dropna\n", nonPDNdf)
+    exportTable(containsPDNdf, "/home/royal/Desktop/containsPDNdf.csv")
+
+    # Finally it's just the list of Days and Horses that only had PDN blocks (not including NULL)
+    containsPDNlist = containsPDNdf.loc[:, ['Horse', 'When']]
+    ds5 = set([tuple(line) for line in containsPDNlist.values])
+    ds6 = set([tuple(line) for line in toolongDf.values])
+    onlyPDNdf = pd.DataFrame(list(ds5.difference(ds6)))
+    print("onlyPDNdf\n", onlyPDNdf)
+    exportTable(onlyPDNdf, "/home/royal/Desktop/onlyPDNdf.csv")
+
     outputDf = pd.DataFrame(columns=inputDf.columns)
-
-    # 2.0 FETCHING PHASE
-    inputDfshort = inputDf.copy()
-    inputDfshort['When'] = inputDfshort['When'].str[:9]
-    onlyPDNdf['When'] = onlyPDNdf['When'].str[:9]
-    # exportTable(onlyPDNdf, "/home/royal/Desktop/onlyPDNdf.csv")
-
-    # 2.1 for every row of onlyPDNdf, grab the corresponding horse and day from the inputDf
+    inputshortDf = inputDf.copy()
+    inputshortDf['When'] = inputshortDf['When'].str[:9]
     for _, row in onlyPDNdf.iterrows():
-        # print("row.Horse", row.Horse, "row.When", row.When)
-        tempDf = inputDfshort.copy()
+        print("row[0]", row[0], "row[1]", row[1])
+        mask1 = inputshortDf['Horse'] == row[0]
+        mask2 = inputshortDf['When'] == row[1]
+        tempDf = inputshortDf.where(mask1 & mask2)
+        print(tempDf.dropna())
         
-        tempDf = filterTable(tempDf, "Horse", "==", row.Horse)
-        tempDf = filterTable(tempDf, "When", "==", row.When)
+        # tempDf = filterTable(tempDf, "Horse", "==", row.Horse)
+        # tempDf = filterTable(tempDf, "When", "==", row.When)
         #print(tempDf)
         #add row to output DF
-        outputDf = outputDf.append(tempDf)
-        # print(outputDf)
+        outputDf = outputDf.append(tempDf.dropna())
+        print(outputDf)
+        # tableFilter = df[column] == value
+        # tableFilter2 = df[column] == -1*value
+        # df.where(tableFilter & tableFilter2, inplace=False)
+        # print( inputDf.loc[[   (inputDf['When'].str[:9] == row[1]) & (inputDf['Horse'].str[:] == row[0])   ]] )
 
-    return outputDf.drop_duplicates()
+    print("ok")
+    # outputDf = 
+
+    # # 2.0 FETCHING PHASE
+    # inputDfshort = inputDf.copy()
+    # inputDfshort['When'] = inputDfshort['When'].str[:9]
+    # onlyPDNdf['When'] = onlyPDNdf['When'].str[:9]
+    # # exportTable(onlyPDNdf, "/home/royal/Desktop/onlyPDNdf.csv")
+
+    # # 2.1 for every row of onlyPDNdf, grab the corresponding horse and day from the inputDf
+    # for _, row in onlyPDNdf.iterrows():
+    #     # print("row.Horse", row.Horse, "row.When", row.When)
+    #     tempDf = inputDfshort.copy()
+        
+    #     tempDf = filterTable(tempDf, "Horse", "==", row.Horse)
+    #     tempDf = filterTable(tempDf, "When", "==", row.When)
+    #     #print(tempDf)
+    #     #add row to output DF
+    #     outputDf = outputDf.append(tempDf)
+    #     # print(outputDf)
+    # outputDf = filterTable(outputDf, "Trial", "==", "Straight Line")
+    # outputDf = filterTable(outputDf, "Fore Strides", ">", "19")
+    # outputDf = outputDf.drop_duplicates()
+    return onlyPDNdf
 
 def goQuery1(df1):
     
