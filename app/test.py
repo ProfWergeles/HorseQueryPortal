@@ -22,7 +22,7 @@ def main():
 
     df1 = fdb.queryOnlyPDN(df1)
 
-    fdb.exportTable(df1, "/home/royal/Desktop/outputONLYpdn_SAA_JNS.csv")
+    fdb.exportTable(df1, "/home/royal/Desktop/LLocator-Results-2021-01-11onlyPDN.csv")
     return
 
 def fixSAAJNSpandas():
@@ -40,7 +40,11 @@ def fixSAAJNSpycsv():
     with open("/home/royal/Documents/IndependentProjects/Horse/Spreadsheet SAA tablet 060121.csv", 'rt') as f:
         data = f.read()
 
+<<<<<<< HEAD
     #data = data.replace('default""', 'default')
+=======
+    # data = data.replace('default""', 'default')
+>>>>>>> pdnonly
     # data = data.replace('"', '')
     # data = data.replace(',""', ',"')
     # data = data.replace('"",', '",')
