@@ -5,10 +5,11 @@ import csv
 
 def main():
     #mtable.nonCLI("/home/royal/Desktop/inputabsol.csv", "/home/royal/Desktop/outputheadless.csv")
-    input = "/home/royal/Desktop/LLocator-Results-2021-01-11"
+    input = "/home/royal/Desktop/evidencia"
 
-    # df1 = fdb.createTable("/home/royal/Documents/IndependentProjects/Horse/Spreadsheet SAA tablet 060121.csv")
-    # df1 = fdb.appendCSV(df1, "/home/royal/Documents/IndependentProjects/Horse/Spreadsheet JNS tablet 100121.csv")
+    df1 = fdb.createTable("/home/royal/Documents/IndependentProjects/Horse/Spreadsheet SAA tablet 060121.csv")
+    df1 = fdb.appendCSV(df1, "/home/royal/Documents/IndependentProjects/Horse/Spreadsheet JNS tablet 100121.csv")
+    fdb.exportTable(df1, input + ".csv")
     df1 = fdb.createTable(input + ".csv")
     # fdb.exportTable(df1, "/home/royal/Desktop/inputpdn_SAA_JNS.csv")
 
@@ -24,7 +25,7 @@ def main():
     # fdb.exportTable(df1, input + "_PDN.csv")
 
     df1 = fdb.queryOnlyPDN(df1)
-    fdb.exportTable(df1, input + "_onlyPDN.csv")
+    fdb.exportTable(df1, input + "onlyPDN.csv")
     return
 
 def fixSAAJNSpandas():
