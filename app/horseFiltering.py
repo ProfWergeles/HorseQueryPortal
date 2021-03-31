@@ -13,8 +13,10 @@ Created on Tue Nov  3 14:24:17 2020
 import pandas as pd
 import argparse
 import numpy as np
+import operator as op
 #from multipledispatch import dispatch
 
+Columns = []
 
 #df = pd.DataFrame
 
@@ -333,124 +335,6 @@ def goQuery6(df1):
     
     return df1
 
-
-# def goQuery1_old(inputDf):
-    
-#     print("\n\nQUERY 1 ipsilateral impact\n\ninputDf", inputDf)
-
-
-#     # query 1 ipsilateral impact has 6 parts:
-#     # 1. straight line trials
-#     # 2. no blocks
-#     # 3. at least twenty strides
-#     # 4. VS > 8.5 (absolute value)
-#     # 5. diffMIN pelvis >3 (absolute value)
-#     # 6. sign of diffminpelvis same as sign of diffminhead
-#     # this is ipsilateral? If memory serves
-    
-#     # 1. straight lines (can be done in sql but moving to python)
-#     straightlineFilter = inputDf["Trial"] == "Straight Line"
-    
-#     # 2. no blocks
-#     inputDf = inputDf[inputDf['Blocks'].isnull()]
-    
-#     # 3. at least twenty strides 
-#     # not sure if this is the correct column. some combo of Fore Strides, Hind Strides?
-#     foreStrideFilter = inputDf["Fore Strides"] >= 20
-#     hindStrideFilter = inputDf["Hind Strides"] >= 20
-    
-#     # 4. VS > 8.5 (absolute value). So |vectorsum| > 8.5, or (vectorsum < -8.5 or > 8.5)
-#     vectorPosFilter = inputDf["Fore Signed Vector Sum"] > 8.5
-#     vectorNegFilter = inputDf["Fore Signed Vector Sum"] < -8.5
-    
-#     # 5. diffmin pelvis >3 (absolute value)
-#     hinddiffminmeanPosFilter = inputDf["Hind Diff Min Mean"] > 3
-#     hinddiffminmeanNegFilter = inputDf["Hind Diff Min Mean"] < -3
-    
-#     # 6. diffminpelvis same sign as diffminhead. 
-#     # 'Hind Diff Min Mean' 'Fore Diff Min Mean'
-#     samesignFilter = inputDf["Hind Diff Min Mean"] * inputDf["Fore Diff Min Mean"] > 0
-    
-#     #print("before where\n\n", inputDf)
-    
-#     #step 1 thru 3 filter
-#     inputDf.where(straightlineFilter & foreStrideFilter, inplace=True)
-#     #step 4 vector sum filter
-#     inputDf.where(vectorPosFilter | vectorNegFilter, inplace=True)
-#     #step 5 diffmaxmeanfilter
-#     inputDf.where(hinddiffminmeanPosFilter | hinddiffminmeanNegFilter, inplace=True)
-#     #step 6 same sign filter
-#     inputDf.where(samesignFilter, inplace=True)
-    
-#     #print("inputDf is a ", type(inputDf))   
-#     #print("after where\n\n", inputDf)
-#     inputDf.dropna(how="all", inplace=True)
-#     #print("\n\nQUERY 1 after dropna (finished filtering)\n\n", inputDf)
-    
-#     #print("inputDf is a ", type(inputDf))
-    
-#     return inputDf
-    
-
-# def goQuery2_old(inputDf):
-    
-#     print("\n\nQUERY 2 \n\ninputDf", inputDf)
-
-#     #print("inputDf is a ", type(inputDf))
-#     # pandas filtering. 
-    
-#     # query 2 ipsilateral pushoff has 6 parts:
-#     # 1. straight line trials
-#     # 2. no blocks
-#     # 3. at least twenty strides
-#     # 4. VS > 8.5 (absolute value)
-#     # 5. diffmax pelvis >3 (absolute value)
-#     # 6. sign of diffmaxpelvis same as sign of diffminhead
-    
-#     # 1. straight lines (can be done in sql but moving to python)
-#     straightlineFilter = inputDf["Trial"] == "Straight Line"
-    
-#     # 2. no blocks
-#     inputDf = inputDf[inputDf['Blocks'].isnull()]
-    
-#     # 3. at least twenty strides 
-#     # not sure if this is the correct column. some combo of Fore Strides, Hind Strides?
-#     foreStrideFilter = inputDf["Fore Strides"] >= 20
-#     hindStrideFilter = inputDf["Hind Strides"] >= 20
-    
-#     # 4. VS > 8.5 (absolute value). So |vectorsum| > 8.5, or (vectorsum < -8.5 or > 8.5)
-#     vectorPosFilter = inputDf["Fore Signed Vector Sum"] > 8.5
-#     vectorNegFilter = inputDf["Fore Signed Vector Sum"] < -8.5
-    
-#     # 5. diffmax pelvis >3 (absolute value)
-#     hinddiffmaxmeanPosFilter = inputDf["Hind Diff Max Mean"] > 3
-#     hinddiffmaxmeanNegFilter = inputDf["Hind Diff Max Mean"] < -3
-    
-#     # 6. diffmaxpelvis same sign as diffminhead. 
-#     # 'Hind Diff Max Mean' 'Fore Diff Min Mean'
-#     samesignFilter = inputDf["Hind Diff Max Mean"] * inputDf["Fore Diff Min Mean"] > 0
-    
-#     #print("before where\n\n", inputDf)
-    
-#     #step 1 thru 3 filter
-#     inputDf.where(straightlineFilter & foreStrideFilter & hindStrideFilter, inplace=True)
-#     #step 4 vector sum filter
-#     inputDf.where(vectorPosFilter | vectorNegFilter, inplace=True)
-#     #step 5 diffmaxmeanfilter
-#     inputDf.where(hinddiffmaxmeanPosFilter | hin = filterTable(tempDf, "Horse", "!=", row.Horse)
-
-#     #step 6 same sign filter
-#     inputDf.where(samesignFilter, inplace=True)
-    
-#     #print("inputDf is a ", type(inputDf))   
-#     #print("after where\n\n", inputDf)
-#     inputDf.dropna(how="all", inplace=True)
-#     print("\n\nQUERY 2 after dropna (finished filtering)\n\n", inputDf)
-    
-#     #print("inputDf is a ", type(inputDf))
-  
-#     return inputDf
-
 def nullBlocks(inputDf):
     
     #print("\n\nNullBlocks activated on: \n\ninputDf", inputDf)
@@ -513,97 +397,79 @@ def filterTable(df, column, operator, value, absvalue="None"):
         df.dropna(how="all", inplace=True)
         return df
     else:
-        # print("Is str 1", isinstance(value, str))
-        if(is_number(value) & isinstance(value, str)):
-            value = float(value)
-            # print("\/Is str 2", isinstance(value, str))
-        #if (left and right abs are true)
-        ##pandas dataframe function perhaps:
-            # can we get the aboslute value of the column in order to make the filter?
-            # df1[column].abs()?  
+        # parse operator
+        operate = op.eq
+        if (operator == "=="):
+            operate = op.eq
+        elif (operator == ">"):
+            operate = op.gt
+        elif (operator == "<"):
+            operate = op.lt
+        elif (operator == ">="):
+            operate = op.ge
+        elif (operator == "<="):
+            operate = op.le
+        elif (operator == "!="):
+            operate = op.ne
         
-        if (absvalue == "Right"):   
-            # TODO: make sure the value is positive otherwise the math is wrong
-            # TODO: allow for two strings comparison 
-            # 9. |diffMIN pelvis| > |diffMAX pelvis|
-            # df1 = filterTable(df1, "Hind Diff Min Mean", ">", "Hind Diff Max Mean", absvalue=True)
-            if (operator == "=="):
-                tableFilter = df[column] == value
-                tableFilter2 = df[column] == -1*value
-                df.where(tableFilter | tableFilter2, inplace=True)
-            elif (operator == ">"):
-                tableFilter = df[column] > value
-                tableFilter2 = df[column] < -1*value
-                df.where(tableFilter | tableFilter2, inplace=True)
-            elif (operator == "<"):
-                tableFilter = df[column] < value
-                tableFilter2 = df[column] > -1*value
-                df.where(tableFilter & tableFilter2, inplace=True)
-            elif (operator == ">="):
-                tableFilter = df[column] >= value
-                tableFilter2 = df[column] <= -1*value
-                df.where(tableFilter | tableFilter2, inplace=True)
-            elif (operator == "<="):
-                tableFilter = df[column] <= value
-                tableFilter2 = df[column] >= -1*value
-                df.where(tableFilter & tableFilter2, inplace=True)
-            elif (operator == "!="):
-                tableFilter = df[column] != value
-                tableFilter = df[column] != -1*value
-                df.where(tableFilter & tableFilter2, inplace=True)
-            else:
-                errorstring = "\n\nINPUT::\nOperator not valid and will cause tableFilter reference before assignment"
-                raise ValueError(errorstring)   
-                
+
+        # a function to determine if value is a string, number, or column
+        valueType = "string"
+        if (is_number(value) & isinstance(value, str)):
+            value = float(value)
+            valueType = "number"
+        if (value in Columns):
+            valueType = "column"
+
+        print(valueType)
+        print(value)
+
+        if (absvalue == "Both"):
+            print("abs both")
+            if (valueType == "column"):
+                print("both column")
+                tableFilter = operate(abs(df[column]), abs(df[value]))
+                df.where(tableFilter, inplace=True)
+
+            if (valueType == "number"):
+                print("both number")
+                tableFilter = operate(abs(df[column]), abs(value))
+                df.where(tableFilter, inplace=True)
+
+        elif (absvalue == "Left"):   
+            print("abs left")
+            if (valueType == "column"):
+                print("left column")
+                tableFilter = operate(abs(df[column]), df[value])
+                df.where(tableFilter, inplace=True)
+
+            if (valueType == "number"):
+                print("left number")
+                tableFilter = operate(abs(df[column]), value)
+                df.where(tableFilter, inplace=True)
+
+        elif (absvalue == "Right"):
+            print("abs right")
+            if (valueType == "column"):
+                print("right column")
+                tableFilter = operate(df[column], abs(df[value]))
+                df.where(tableFilter, inplace=True)
+
+            if (valueType == "number"):
+                print("right number")
+                tableFilter = operate(df[column], abs(value))
+                df.where(tableFilter, inplace=True) 
+
         else:    #abs is none
-            if (operator == "=="):
-                tableFilter = df[column] == value
-            elif (operator == ">"):
-                tableFilter = df[column] > value
-            elif (operator == "<"):
-                tableFilter = df[column] < value
-            elif (operator == ">="):
-                tableFilter = df[column] >= value
-            elif (operator == "<="):
-                tableFilter = df[column] <= value
-            elif (operator == "!="):
-                tableFilter = df[column] != value
+            print("abs none")
+            if (valueType == "column"):
+                print("none column")
+                tableFilter = operate(df[column], df[value])
+                df.where(tableFilter, inplace=True)
             else:
-                errorstring = "\n\nINPUT::\nOperator not valid and will cause tableFilter reference before assignment"
-                raise ValueError(errorstring)      
-            df.where(tableFilter, inplace=True)
-            
+                print("none string or number")
+                tableFilter = operate(df[column], value)
+                df.where(tableFilter, inplace=True)
+
     df.dropna(how="all", inplace=True)
-    
     return df
-
-
-# def main():
-#     print("printed from main")
-#     #create parser
-#     parser = argparse.ArgumentParser()
-    
-#     #add arguments to the parser
-#     parser.add_argument("inputfile")
-#     parser.add_argument("outputfile")
-    
-#     args = parser.parse_args()
-    
-#     inputDf = pd.read_csv(args.inputfile)
-#     #print(inputDf)
-#     outputDf = pd.DataFrame()
-    
-#     #ANALYSIS MEASUREMENT: vectorSum (type1), diffMinHead (diffMinMean type1), diffMinPelvis (diffMinMean type2), diffMaxMean (type2), diffMinStdDev (type2),
-#     #TRIALhorseID, idGuid, trialPattern, id, 
-#     #HORSE id (horse), name (name), idGuid, 
-#     #OWNER id, firstName, lastName, idGuid, 
-#     #PERSON id, lastName, idGuid
-    
-#     print("Will attempt to use arguments as filenames, working...")
-#     outputDf = goQuery(inputDf, outputDf)
- 
-#     outputDf.to_csv(args.outputfile)
-#     print("Exported to", args.outputfile)
- 
-# if __name__ == "__main__":
-#     main()

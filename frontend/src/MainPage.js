@@ -41,6 +41,7 @@ function MainPage() {
         if (query === "pdn" || query === "Only PDN") {
             formData.append("query", query);
         } else {
+            formData.append("columns", columns)
             conditions.forEach(condition => {
                 if (condition.value === "") {
                     validForm = false;
@@ -109,12 +110,24 @@ function MainPage() {
         setConditions(c);
     }
 
-    const valueChange = (e, id) => {
+    // const valueChange = (e, id) => {
+    //     let c = [...conditions];
+
+    //     for (var i in c) {
+    //         if (c[i].id === id) {
+    //             c[i].value = e.target.value;
+    //         }
+    //     }
+
+    //     setConditions(c);
+    // }
+
+    const valueChange = (newValue, id) => {
         let c = [...conditions];
 
         for (var i in c) {
             if (c[i].id === id) {
-                c[i].value = e.target.value;
+                c[i].value = newValue;
             }
         }
 
@@ -237,9 +250,12 @@ function MainPage() {
                             <option value="">Please select a query</option>
                             <option value="Ipsilateral Impact">Ipsilateral Impact</option>
                             <option value="Ipsilateral Pushoff">Ipsilateral Pushoff</option>
-                            {/* <option value="Ipsilateral Mostly Impact">Ipsilateral Mostly Impact</option> */}
+                            <option value="Ipsilateral Mostly Impact">Ipsilateral Mostly Impact</option>
+                            <option value="Ipsilateral Mostly Pushoff">Ipsilateral Mostly Pushoff</option>
                             <option value="Just Impact">Just Impact</option>
                             <option value="Just Pushoff">Just Pushoff</option>
+                            <option value="Mostly Impact">Mostly Impact</option>
+                            <option value="Mostly Pushoff">Mostly Pushoff</option>
                             <option value="pdn">PDN Query</option>
                             <option value="Only PDN">Only PDN</option>
                         </select>
