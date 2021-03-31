@@ -57,16 +57,16 @@ def nonCLI(inputfile, outputfile, query):
     outputDf = pd.DataFrame()
     print("Will attempt to use function parameters as filenames for ", query, ", working...")
 
-    if (query == "Ipsilateral Impact"): #ipsi impact / pushoff?
-        outputDf = goQuery1(inputDf)
-    if (query == "Ipsilateral Pushoff"):
-        outputDf = goQuery2(inputDf)
-    if (query == "Ipsilateral Mostly Impact"):
-        outputDf = goQuery3(inputDf)
-    if (query == "Just Impact"):
-        outputDf = goQuery5(inputDf)
-    if (query == "Just Pushoff"):
-        outputDf = goQuery6(inputDf)
+    # if (query == "Ipsilateral Impact"): #ipsi impact / pushoff?
+    #     outputDf = goQuery1(inputDf)
+    # if (query == "Ipsilateral Pushoff"):
+    #     outputDf = goQuery2(inputDf)
+    # if (query == "Ipsilateral Mostly Impact"):
+    #     outputDf = goQuery3(inputDf)
+    # if (query == "Just Impact"):
+    #     outputDf = goQuery5(inputDf)
+    # if (query == "Just Pushoff"):
+    #     outputDf = goQuery6(inputDf)
     if (query == "pdn"):
         #we should also rename this function and the above string. 
         #maybe "PDN + Extra Blocks?"
@@ -182,7 +182,7 @@ def queryOnlyPDN(inputDf):
     ds6 = set([tuple(line) for line in toolongDf.values])
     onlyPDNdf = pd.DataFrame(list(ds5.difference(ds6)))
     print("Horse & Date List\n", onlyPDNdf)
-    exportTable(onlyPDNdf, "/home/royal/Desktop/onlyPDNdf.csv")
+    # exportTable(onlyPDNdf, "/home/royal/Desktop/onlyPDNdf.csv")
 
 
     # # 2.0 FETCHING PHASE
@@ -231,6 +231,7 @@ def queryOnlyPDN(inputDf):
     df0 = filterTable(df0, "Fore Strides", ">", "19")
     return df0
 
+"""
 def goQuery1(df1):
     
     print("\nQUERY 1 ipsilateral impact")
@@ -334,6 +335,8 @@ def goQuery6(df1):
     df1 = filterTable(df1, "Hind Diff Max Mean", "Same Signs", "Fore Diff Min Mean")
     
     return df1
+
+"""
 
 def nullBlocks(inputDf):
     
