@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { useHistory } from "react-router-dom";
 import 'react-tabs/style/react-tabs.css';
+import CircularProgress from '@material-ui/core/CircularProgress';
 
 import ConditionList from './ConditionList';
 import queries from './presetQueries';
@@ -18,6 +19,7 @@ function MainPage() {
     const [browseFilename, setBrowseFilename] = useState("Browse Files...");
     const [conditions, setConditions] = useState([]);
     const [error, setError] = useState("");
+    const [loading, setLoading] = useState(false);
 
     const handleSubmit = e => {
         e.preventDefault();
@@ -60,9 +62,12 @@ function MainPage() {
             console.log(conditions);
         }
 
+        setLoading(true);
+
         axios.post('/api/upload-file', formData)
         .then(res => {
             if (res.data.success === true) {
+                setLoading(false);
                 console.log(res.data.file);
                 history.push({
                     pathname: '/download',
@@ -70,6 +75,8 @@ function MainPage() {
                 })
             } else {
                 // need to deal with the error in frontend and backend
+                setLoading(false);
+                alert("Server error")
             }
         });
     }
@@ -109,18 +116,6 @@ function MainPage() {
 
         setConditions(c);
     }
-
-    // const valueChange = (e, id) => {
-    //     let c = [...conditions];
-
-    //     for (var i in c) {
-    //         if (c[i].id === id) {
-    //             c[i].value = e.target.value;
-    //         }
-    //     }
-
-    //     setConditions(c);
-    // }
 
     const valueChange = (newValue, id) => {
         let c = [...conditions];
@@ -212,10 +207,12 @@ function MainPage() {
     }
 
     const nextStep = (number) => {
+        setError("")
         setStep(step + number);
     }
 
     const prevStep = (number) => {
+        setError("")
         setStep(step - number);
     }
 
@@ -278,6 +275,9 @@ function MainPage() {
             case 3: 
                 return (
                     <div>
+                        <div style={{color: "red"}}>{error}</div>
+                        <br />
+                        <br />
                         <div onClick={() => {
                             prevStep(1);
                         }}>Back</div>
@@ -314,6 +314,8 @@ function MainPage() {
                             </button>
                         </div>)}
                         <button className="mainPage__browseFileButton" type="submit">{"Upload & Go"}</button>
+                        {/*  */}
+                        {loading ? <CircularProgress /> : <div></div>}
                     </div>
                 )
             default:
@@ -345,10 +347,6 @@ function MainPage() {
                             parseColumns(e.target.files[0]);
                         }}
                     />
-                    
-                    <br />
-                    <br />
-                    <div style={{color: "red"}}>{error}</div>
                     <br />
                     <br />
                     {(columns.length === 0 ? (<div></div>) : 
