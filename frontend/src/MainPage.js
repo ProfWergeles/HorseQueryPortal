@@ -3,6 +3,8 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { useHistory } from "react-router-dom";
 import 'react-tabs/style/react-tabs.css';
+import Grid from '@material-ui/core/Grid';
+
 import CircularProgress from '@material-ui/core/CircularProgress';
 
 import ConditionList from './ConditionList';
@@ -278,25 +280,31 @@ function MainPage() {
                         <div style={{color: "red"}}>{error}</div>
                         <br />
                         <br />
-                        <div onClick={() => {
-                            prevStep(1);
-                        }}>Back</div>
+                        <Grid container justify="center" spacing={5}>
+                            <Grid item>
+                                <div className="klButton" onClick={() => {
+                                    prevStep(1);
+                                }}>Back</div>
+                            </Grid>
+                            <Grid item>
+                                <div className="klButton" onClick={() => {
+                                    setStep(1);
+                                }}>Start Over</div>
+                            </Grid>
+                        </Grid>
                         <br />
-                        <div onClick={() => {
-                            setStep(1);
-                        }}>Start Over</div>
                         <br />
-                        <br />
-                        {query === "pdn" || query === "Only PDN" ? (<div>You chose {query} query</div>) : (<div>
+                        {query === "pdn" || query === "Only PDN" ? (<div>You chose {query} query</div>) : (<div className="conditionlist_wrapper">
                             <ConditionList 
-                            conditions={conditions}
-                            parametorChange={parametorChange}
-                            comparatorChange={comparatorChange}
-                            valueChange={valueChange}
-                            absChange={absChange}
-                            deleteCondition={deleteCondition}
-                            columns={columns}
+                                conditions={conditions}
+                                parametorChange={parametorChange}
+                                comparatorChange={comparatorChange}
+                                valueChange={valueChange}
+                                absChange={absChange}
+                                deleteCondition={deleteCondition}
+                                columns={columns}
                             />
+                            <br />
                             <button
                                 className="klButton"
                                 onClick={(e) => {
