@@ -7,7 +7,7 @@ import AutoCompleteTextField from './components/AutoCompleteTextField'
 
 function Condition(props) {
     return (
-        <Grid container justify="space-between">
+        <Grid container justify="space-between" spacing={3} alignItems="center">
             <Grid item>
                 <DeleteIcon
                     style={{cursor: "pointer"}}
@@ -17,18 +17,8 @@ function Condition(props) {
                     }}
                 />
             </Grid>
-            <Grid>
-                <select 
-                    value={props.condition.parametor} 
-                    onChange={e => props.parametorChange(e, props.condition.id)}
-                >
-                    {
-                        props.columns.map(column => (
-                            <option key={column} value={column}>{column}</option>
-                        ))
-                    }
-                </select>
-                {/* <Select
+            <Grid item>
+                <Select
                     value={props.condition.parametor} 
                     onChange={e => props.parametorChange(e, props.condition.id)}
                 >
@@ -37,21 +27,21 @@ function Condition(props) {
                             <MenuItem key={column} value={column}>{column}</MenuItem>
                         ))
                     }
-                </Select> */}
+                </Select>
             </Grid>
             <Grid item>
-                <select
+                <Select
                     value={props.condition.comparator} 
                     onChange={e => props.comparatorChange(e, props.condition.id)}
                 >
-                    <option value=">">{'>'}</option>
-                    <option value="<">{'<'}</option>
-                    <option value=">=">{'>='}</option>
-                    <option value="<=">{'<='}</option>
-                    <option value="==">{'=='}</option>
-                    <option value="!=">{'!='}</option>
-                    <option value="Same Signs">{'Same Signs'}</option>
-                </select>
+                    <MenuItem value=">">{'>'}</MenuItem>
+                    <MenuItem value="<">{'<'}</MenuItem>
+                    <MenuItem value=">=">{'>='}</MenuItem>
+                    <MenuItem value="<=">{'<='}</MenuItem>
+                    <MenuItem value="==">{'=='}</MenuItem>
+                    <MenuItem value="!=">{'!='}</MenuItem>
+                    <MenuItem value="Same Signs">{'Same Signs'}</MenuItem>
+                </Select>
             </Grid>
 
             <Grid item>
@@ -63,16 +53,16 @@ function Condition(props) {
                 />
             </Grid>
 
-            <Grid>
-                <select 
+            <Grid item>
+                <Select 
                     value={props.condition.abs} 
                     onChange={e => props.absChange(e, props.condition.id)}
                 >
-                    <option value="None">{'No Absolute Value'}</option>
-                    <option value="Right">{'Absolute Value On Right Side'}</option>
-                    <option value="Left">{'Absolute Value On Left Side'}</option>
-                    <option value="Both">{'Absolute Value On Both Sides'}</option>
-                </select>
+                    <MenuItem value="None">{'No Absolute Value'}</MenuItem>
+                    <MenuItem value="Right">{'Absolute Value On Right Side'}</MenuItem>
+                    <MenuItem value="Left">{'Absolute Value On Left Side'}</MenuItem>
+                    <MenuItem value="Both">{'Absolute Value On Both Sides'}</MenuItem>
+                </Select>
             </Grid>
             <br />
             <br />

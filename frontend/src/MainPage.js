@@ -6,6 +6,8 @@ import 'react-tabs/style/react-tabs.css';
 import Grid from '@material-ui/core/Grid';
 
 import CircularProgress from '@material-ui/core/CircularProgress';
+import Select from '@material-ui/core/Select';
+import MenuItem from '@material-ui/core/MenuItem';
 
 import ConditionList from './ConditionList';
 import queries from './presetQueries';
@@ -242,22 +244,23 @@ function MainPage() {
             case 2: 
                 return (
                     <div>
-                        <select
+                        <Select
+                            displayEmpty
                             value={query}
                             onChange={e => setQuery(e.target.value)}
                         >
-                            <option value="">Please select a query</option>
-                            <option value="Ipsilateral Impact">Ipsilateral Impact</option>
-                            <option value="Ipsilateral Pushoff">Ipsilateral Pushoff</option>
-                            <option value="Ipsilateral Mostly Impact">Ipsilateral Mostly Impact</option>
-                            <option value="Ipsilateral Mostly Pushoff">Ipsilateral Mostly Pushoff</option>
-                            <option value="Just Impact">Just Impact</option>
-                            <option value="Just Pushoff">Just Pushoff</option>
-                            <option value="Mostly Impact">Mostly Impact</option>
-                            <option value="Mostly Pushoff">Mostly Pushoff</option>
-                            <option value="pdn">PDN Query</option>
-                            <option value="Only PDN">Only PDN</option>
-                        </select>
+                            <MenuItem value="" disabled>Please select a query</MenuItem>
+                            <MenuItem value="Ipsilateral Impact">Ipsilateral Impact</MenuItem>
+                            <MenuItem value="Ipsilateral Pushoff">Ipsilateral Pushoff</MenuItem>
+                            <MenuItem value="Ipsilateral Mostly Impact">Ipsilateral Mostly Impact</MenuItem>
+                            <MenuItem value="Ipsilateral Mostly Pushoff">Ipsilateral Mostly Pushoff</MenuItem>
+                            <MenuItem value="Just Impact">Just Impact</MenuItem>
+                            <MenuItem value="Just Pushoff">Just Pushoff</MenuItem>
+                            <MenuItem value="Mostly Impact">Mostly Impact</MenuItem>
+                            <MenuItem value="Mostly Pushoff">Mostly Pushoff</MenuItem>
+                            <MenuItem value="pdn">PDN Query</MenuItem>
+                            <MenuItem value="Only PDN">Only PDN</MenuItem>
+                        </Select>
                         <br />
                         <br />
                         <div className="klButton" onClick={() => {
