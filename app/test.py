@@ -9,7 +9,7 @@ def main():
 
     # df1 = fdb.createTable("/home/royal/Documents/IndependentProjects/Horse/Spreadsheet SAA tablet 060121.csv")
     # df1 = fdb.appendCSV(df1, "/home/royal/Documents/IndependentProjects/Horse/Spreadsheet JNS tablet 100121.csv")
-    df1 = fdb.createTable("/home/royal/Desktop/LLocator-Results-2021-01-11.csv")
+    df1 = fdb.createTable("/home/royal/Desktop/MergedLLocator13Feb2021parenremoved.csv")
     # fdb.exportTable(df1, "/home/royal/Desktop/inputpdn_SAA_JNS.csv")
 
     # df1 = fdb.createTable("/home/royal/Desktop/inputpdn_SAA_JNS.csv")
@@ -20,9 +20,9 @@ def main():
     #df2 = fdb.goPDNQuery(df2)
     #fdb.exportTable(df2, "/home/royal/Desktop/MORETHAN1pdn_SAA_JNS.csv")
 
-    df1 = fdb.queryOnlyPDN(df1)
+    df1 = fdb.queryOnlyPDNmerged(df1)
 
-    fdb.exportTable(df1, "/home/royal/Desktop/LLocator-Results-2021-01-11onlyPDN.csv")
+    fdb.exportTable(df1, "/home/royal/Desktop/MergedLLocator13Feb2021onlyPDN.csv")
     return
 
 def fixSAAJNSpandas():
@@ -40,11 +40,7 @@ def fixSAAJNSpycsv():
     with open("/home/royal/Documents/IndependentProjects/Horse/Spreadsheet SAA tablet 060121.csv", 'rt') as f:
         data = f.read()
 
-<<<<<<< HEAD
-    #data = data.replace('default""', 'default')
-=======
     # data = data.replace('default""', 'default')
->>>>>>> pdnonly
     # data = data.replace('"', '')
     # data = data.replace(',""', ',"')
     # data = data.replace('"",', '",')
