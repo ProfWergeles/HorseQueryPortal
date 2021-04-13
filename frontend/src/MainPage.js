@@ -3,6 +3,11 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { useHistory } from "react-router-dom";
 import 'react-tabs/style/react-tabs.css';
+import Grid from '@material-ui/core/Grid';
+
+import CircularProgress from '@material-ui/core/CircularProgress';
+import Select from '@material-ui/core/Select';
+import MenuItem from '@material-ui/core/MenuItem';
 
 import ConditionList from './ConditionList';
 import queries from './presetQueries';
@@ -18,6 +23,7 @@ function MainPage() {
     const [browseFilename, setBrowseFilename] = useState("Browse Files...");
     const [conditions, setConditions] = useState([]);
     const [error, setError] = useState("");
+    const [loading, setLoading] = useState(false);
 
     const handleSubmit = e => {
         e.preventDefault();
@@ -60,9 +66,12 @@ function MainPage() {
             console.log(conditions);
         }
 
+        setLoading(true);
+
         axios.post('/api/upload-file', formData)
         .then(res => {
             if (res.data.success === true) {
+                setLoading(false);
                 console.log(res.data.file);
                 history.push({
                     pathname: '/download',
@@ -70,6 +79,8 @@ function MainPage() {
                 })
             } else {
                 // need to deal with the error in frontend and backend
+                setLoading(false);
+                alert("Server error")
             }
         });
     }
@@ -109,18 +120,6 @@ function MainPage() {
 
         setConditions(c);
     }
-
-    // const valueChange = (e, id) => {
-    //     let c = [...conditions];
-
-    //     for (var i in c) {
-    //         if (c[i].id === id) {
-    //             c[i].value = e.target.value;
-    //         }
-    //     }
-
-    //     setConditions(c);
-    // }
 
     const valueChange = (newValue, id) => {
         let c = [...conditions];
@@ -212,10 +211,12 @@ function MainPage() {
     }
 
     const nextStep = (number) => {
+        setError("")
         setStep(step + number);
     }
 
     const prevStep = (number) => {
+        setError("")
         setStep(step - number);
     }
 
@@ -243,22 +244,23 @@ function MainPage() {
             case 2: 
                 return (
                     <div>
-                        <select
+                        <Select
+                            displayEmpty
                             value={query}
                             onChange={e => setQuery(e.target.value)}
                         >
-                            <option value="">Please select a query</option>
-                            <option value="Ipsilateral Impact">Ipsilateral Impact</option>
-                            <option value="Ipsilateral Pushoff">Ipsilateral Pushoff</option>
-                            <option value="Ipsilateral Mostly Impact">Ipsilateral Mostly Impact</option>
-                            <option value="Ipsilateral Mostly Pushoff">Ipsilateral Mostly Pushoff</option>
-                            <option value="Just Impact">Just Impact</option>
-                            <option value="Just Pushoff">Just Pushoff</option>
-                            <option value="Mostly Impact">Mostly Impact</option>
-                            <option value="Mostly Pushoff">Mostly Pushoff</option>
-                            <option value="pdn">PDN Query</option>
-                            <option value="Only PDN">Only PDN</option>
-                        </select>
+                            <MenuItem value="" disabled>Please select a query</MenuItem>
+                            <MenuItem value="Ipsilateral Impact">Ipsilateral Impact</MenuItem>
+                            <MenuItem value="Ipsilateral Pushoff">Ipsilateral Pushoff</MenuItem>
+                            <MenuItem value="Ipsilateral Mostly Impact">Ipsilateral Mostly Impact</MenuItem>
+                            <MenuItem value="Ipsilateral Mostly Pushoff">Ipsilateral Mostly Pushoff</MenuItem>
+                            <MenuItem value="Just Impact">Just Impact</MenuItem>
+                            <MenuItem value="Just Pushoff">Just Pushoff</MenuItem>
+                            <MenuItem value="Mostly Impact">Mostly Impact</MenuItem>
+                            <MenuItem value="Mostly Pushoff">Mostly Pushoff</MenuItem>
+                            <MenuItem value="pdn">PDN Query</MenuItem>
+                            <MenuItem value="Only PDN">Only PDN</MenuItem>
+                        </Select>
                         <br />
                         <br />
                         <div className="klButton" onClick={() => {
@@ -278,25 +280,34 @@ function MainPage() {
             case 3: 
                 return (
                     <div>
-                        <div onClick={() => {
-                            prevStep(1);
-                        }}>Back</div>
-                        <br />
-                        <div onClick={() => {
-                            setStep(1);
-                        }}>Start Over</div>
+                        <div style={{color: "red"}}>{error}</div>
                         <br />
                         <br />
-                        {query === "pdn" || query === "Only PDN" ? (<div>You chose {query} query</div>) : (<div>
+                        <Grid container justify="center" spacing={5}>
+                            <Grid item>
+                                <div className="klButton" onClick={() => {
+                                    prevStep(1);
+                                }}>Back</div>
+                            </Grid>
+                            <Grid item>
+                                <div className="klButton" onClick={() => {
+                                    setStep(1);
+                                }}>Start Over</div>
+                            </Grid>
+                        </Grid>
+                        <br />
+                        <br />
+                        {query === "pdn" || query === "Only PDN" ? (<div>You chose {query} query</div>) : (<div className="conditionlist_wrapper">
                             <ConditionList 
-                            conditions={conditions}
-                            parametorChange={parametorChange}
-                            comparatorChange={comparatorChange}
-                            valueChange={valueChange}
-                            absChange={absChange}
-                            deleteCondition={deleteCondition}
-                            columns={columns}
+                                conditions={conditions}
+                                parametorChange={parametorChange}
+                                comparatorChange={comparatorChange}
+                                valueChange={valueChange}
+                                absChange={absChange}
+                                deleteCondition={deleteCondition}
+                                columns={columns}
                             />
+                            <br />
                             <button
                                 className="klButton"
                                 onClick={(e) => {
@@ -314,6 +325,8 @@ function MainPage() {
                             </button>
                         </div>)}
                         <button className="mainPage__browseFileButton" type="submit">{"Upload & Go"}</button>
+                        {/*  */}
+                        {loading ? <CircularProgress /> : <div></div>}
                     </div>
                 )
             default:
@@ -345,10 +358,6 @@ function MainPage() {
                             parseColumns(e.target.files[0]);
                         }}
                     />
-                    
-                    <br />
-                    <br />
-                    <div style={{color: "red"}}>{error}</div>
                     <br />
                     <br />
                     {(columns.length === 0 ? (<div></div>) : 

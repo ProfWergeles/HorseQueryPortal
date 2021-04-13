@@ -39,7 +39,7 @@ function AutoCompleteTextField(props) {
 
   return (
     <div className="AutoCompleteTextField">
-        <input type="text" 
+        <input type="text"
             value={props.value} 
             onChange={e => onTextChange(e, props.conditionId)}
         />
