@@ -299,7 +299,7 @@ const queries = new Map([
         },
         {
             id: 4,
-            parametor: "Hind Diff Min Mean",
+            parametor: "Hind Diff Max Mean",
             comparator: ">",
             value: "3",
             abs: "Left",
