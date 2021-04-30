@@ -44,9 +44,10 @@ function MainPage() {
 
         formData.append("myfile", file, filename);
 
-        if (query === "pdn" || query === "Only PDN") {
+        if (query === "pdn" || query === "OnlyPDN") {
             formData.append("query", query);
         } else {
+            formData.append("query", query);
             formData.append("columns", columns)
             conditions.forEach(condition => {
                 if (condition.value === "") {
@@ -76,6 +77,7 @@ function MainPage() {
                 history.push({
                     pathname: '/download',
                     state: res.data.file,
+                    conditions: conditions,
                 })
             } else {
                 // need to deal with the error in frontend and backend
@@ -181,7 +183,7 @@ function MainPage() {
     }
 
     const populateConditions = () => {
-        if (query === "pdn" || query === "Only PDN") {
+        if (query === "pdn" || query === "OnlyPDN") {
             return;
         }
         if (query !== "") {
@@ -250,16 +252,16 @@ function MainPage() {
                             onChange={e => setQuery(e.target.value)}
                         >
                             <MenuItem value="" disabled>Please select a query</MenuItem>
-                            <MenuItem value="Ipsilateral Impact">Ipsilateral Impact</MenuItem>
-                            <MenuItem value="Ipsilateral Pushoff">Ipsilateral Pushoff</MenuItem>
-                            <MenuItem value="Ipsilateral Mostly Impact">Ipsilateral Mostly Impact</MenuItem>
-                            <MenuItem value="Ipsilateral Mostly Pushoff">Ipsilateral Mostly Pushoff</MenuItem>
-                            <MenuItem value="Just Impact">Just Impact</MenuItem>
-                            <MenuItem value="Just Pushoff">Just Pushoff</MenuItem>
-                            <MenuItem value="Mostly Impact">Mostly Impact</MenuItem>
-                            <MenuItem value="Mostly Pushoff">Mostly Pushoff</MenuItem>
+                            <MenuItem value="IpsilateralImpact">Ipsilateral Impact</MenuItem>
+                            <MenuItem value="IpsilateralPushoff">Ipsilateral Pushoff</MenuItem>
+                            <MenuItem value="IpsilateralMostlyImpact">Ipsilateral Mostly Impact</MenuItem>
+                            <MenuItem value="IpsilateralMostlyPushoff">Ipsilateral Mostly Pushoff</MenuItem>
+                            <MenuItem value="JustImpact">Just Impact</MenuItem>
+                            <MenuItem value="JustPushoff">Just Pushoff</MenuItem>
+                            <MenuItem value="MostlyImpact">Mostly Impact</MenuItem>
+                            <MenuItem value="MostlyPushoff">Mostly Pushoff</MenuItem>
                             <MenuItem value="pdn">PDN Query</MenuItem>
-                            <MenuItem value="Only PDN">Only PDN</MenuItem>
+                            <MenuItem value="OnlyPDN">Only PDN</MenuItem>
                         </Select>
                         <br />
                         <br />
@@ -297,7 +299,7 @@ function MainPage() {
                         </Grid>
                         <br />
                         <br />
-                        {query === "pdn" || query === "Only PDN" ? (<div>You chose {query} query</div>) : (<div className="conditionlist_wrapper">
+                        {query === "pdn" || query === "OnlyPDN" ? (<div>You chose {query} query</div>) : (<div className="conditionlist_wrapper">
                             <ConditionList 
                                 conditions={conditions}
                                 parametorChange={parametorChange}

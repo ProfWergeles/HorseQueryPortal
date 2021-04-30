@@ -71,7 +71,7 @@ def nonCLI(inputfile, outputfile, query):
         #we should also rename this function and the above string. 
         #maybe "PDN + Extra Blocks?"
         outputDf = goPDNQuery(inputDf)
-    if (query == "Only PDN"):
+    if (query == "OnlyPDN"):
         outputDf = queryOnlyPDN(inputDf)
 
     #print(outputDf)

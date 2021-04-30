@@ -4,9 +4,9 @@ import axios from 'axios';
 function DownloadPage(props) {
     // this is filename and it's from MainPage, where it uses history to redirect page along with sending data
     const {state} = props.location;
+    const {conditions} = props.location;
     const [html, setHtml] = useState(null);
     const [loading, setLoading] = useState(false);
-
 
     const download = () => {
         if (window.confirm("After download, you will be redirected back to the main page")) {
@@ -52,6 +52,16 @@ function DownloadPage(props) {
                 <button className="download__klButton" onClick={() => download()}>Download</button>
                 <button className="download__klButton" onClick={() => view()}>View</button>
                 <button className="download__klButton" onClick={() => startOVer()}>Start Over</button>
+            </div>
+            <div style={{textAlign: "center"}}>
+                {
+                    conditions.map(condition => 
+                        <div key={condition.id}>
+                            <p>{condition.parametor} {condition.comparator} {condition.value}, abs: {condition.abs}</p>
+                            <br />
+                        </div>
+                    )
+                }
             </div>
             <br />
             <br />

@@ -10,7 +10,7 @@ function AutoCompleteTextField(props) {
         let value = e.target.value;
 
         // sanitize out special character (only allow: dot(.), letters and numbers (\w), and space(\s))
-        value = value.replace(/[^.\w\s]/gi, '');
+        value = value.replace(/[^.\w\s-]/gi, '');
 
         let s = props.columns
         if (value.length > 0) {

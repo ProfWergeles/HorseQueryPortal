@@ -58,14 +58,16 @@ def upload_file():
                 file.save(os.path.join(app.config["FILE_UPLOADS"], filename))
                 print("File saved")
 
+                # get query
+                query = request.form.get("query")
+                print(query)
+
                 # created the output file name
                 parsedFilename, filetype = os.path.splitext(filename)
-                parsedFilename += "_parsed" + filetype
+                parsedFilename += "_parsed_" + query + filetype
 
                 # check if it is twoQuery form
-                if (request.form.get("query") != None):
-                    query = request.form.get("query")
-                    print(query)
+                if (query == "pdn" or query == "OnlyPDN"):
                     fdb.nonCLI(app.config["FILE_UPLOADS"] + filename, app.config["FILE_UPLOADS"] + parsedFilename, query)
                 else:
                     fdb.Columns = request.form.get("columns").split(",")
@@ -84,7 +86,7 @@ def upload_file():
 
                     print(len(parameters))
 
-                    j = 1
+                    j = 2
                     while j < len(parameters):
                         field = parameters[j]
                         operator = parameters[j+1]

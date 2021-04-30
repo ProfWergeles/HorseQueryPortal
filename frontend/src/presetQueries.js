@@ -1,6 +1,6 @@
 const queries = new Map([
     // q1
-    ["Ipsilateral Impact", [
+    ["IpsilateralImpact", [
         {
             id: 0,
             parametor: "Trial",
@@ -45,7 +45,7 @@ const queries = new Map([
         }
     ]],
     // q2
-    ["Ipsilateral Pushoff", [
+    ["IpsilateralPushoff", [
         {
             id: 0,
             parametor: "Trial",
@@ -90,7 +90,7 @@ const queries = new Map([
         }
     ]],
     // q3
-    ["Ipsilateral Mostly Impact", [
+    ["IpsilateralMostlyImpact", [
         {
             id: 0,
             parametor: "Trial",
@@ -156,7 +156,7 @@ const queries = new Map([
         }
     ]],
     // q4
-    ["Ipsilateral Mostly Pushoff", [
+    ["IpsilateralMostlyPushoff", [
         {
             id: 0,
             parametor: "Trial",
@@ -222,7 +222,7 @@ const queries = new Map([
         }
     ]],
     // q5
-    ["Just Impact", [
+    ["JustImpact", [
         {
             id: 0,
             parametor: "Trial",
@@ -268,7 +268,7 @@ const queries = new Map([
     ]],
 
     // q6
-    ["Just Pushoff", [
+    ["JustPushoff", [
         {
             id: 0,
             parametor: "Trial",
@@ -314,7 +314,7 @@ const queries = new Map([
     ]],
 
     // q7
-    ["Mostly Impact", [
+    ["MostlyImpact", [
         {
             id: 0,
             parametor: "Trial",
@@ -373,7 +373,7 @@ const queries = new Map([
         }
     ]],
     // q8
-    ["Mostly Pushoff", [
+    ["MostlyPushoff", [
         {
             id: 0,
             parametor: "Trial",

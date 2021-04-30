@@ -107,3 +107,34 @@ location /api/ {
 9. After above steps, you can close the terminal and the service will still be runnung on live server.
 
 *DONE!!*
+
+
+# How to add a new preset query
+
+1. Append a new query like following pattern in the `presetQueries.js`
+```
+    ["<Query name>", [
+            {
+                id: 0,
+                parametor: "Trial",
+                comparator: "==",
+                value: "Straight Line",
+                abs: "None",
+            },
+            {
+                id: 1,
+                parametor: "Blocks",
+                comparator: "==",
+                value: "Null",
+                abs: "None",
+            },
+    ]]
+```
+
+2. Append a new option in after following select options in `MainPage.js`
+```
+    <MenuItem value="JustPushoff">Just Pushoff</MenuItem>
+    <MenuItem value="MostlyImpact">Mostly Impact</MenuItem>
+    <MenuItem value="MostlyPushoff">Mostly Pushoff</MenuItem>
+    <Add the new query option here>
+```
